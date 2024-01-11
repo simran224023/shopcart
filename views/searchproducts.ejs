@@ -107,23 +107,24 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent1">
                     <ul class="navbar-nav m-auto">
-                        <% categories.forEach(category=> { %>
-                            <li class='nav-item px-4 fw-bold d-flex justify-content-between mt-0'>
-                                <div>
-                                    <a href='/getCategory/<%= category.category_id %>'
-                                        class='nav-link text-dark d-flex justify-content-center align-item-center'
-                                        style='width:80px; height:80px;'>
-                                        <img src='/images/<%= category.category_image %>' width=70px height=70px
-                                            class='p-0 mb-0'>
-                                    </a>
-                                    <p class='m-0 p-0 d-flex justify-content-center align-item-center'>
-                                        <a href='/getCategory/<%= category.category_id %>' class='nav-link text-dark m-auto p-0 d-inline-block m-0'>
-                                            <%= category.category_title %>
-                                        </a>
-                                    </p>
-                                </div>
-                            </li>
-                            <% }); %>
+                                <% categories.forEach(category=> { %>
+                                    <li class='nav-item px-4 fw-bold d-flex justify-content-between mt-0'>
+                                        <div>
+                                            <a href='/getCategory/<%= category.category_id %>'
+                                                class='nav-link text-dark d-flex justify-content-center align-item-center'
+                                                style='width:80px; height:80px;'>
+                                                <img src='/images/<%= category.category_image %>' width=70px height=70px
+                                                    class='p-0 mb-0'>
+                                            </a>
+                                            <p class='m-0 p-0 d-flex justify-content-center align-item-center'>
+                                                <a href='/getCategory/<%= category.category_id %>'
+                                                    class='nav-link text-dark m-auto p-0 d-inline-block m-0'>
+                                                    <%= category.category_title %>
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </li>
+                                    <% }); %>
                     </ul>
                 </div>
             </div>
