@@ -75,7 +75,7 @@
                         <li class="nav-item">
                             <a class="nav-link ms-2" href="#">Total Price: <i class="fa fa-inr fs-6"
                                     aria-hidden="true"></i>
-
+</a>
                         </li>
                     </ul>
                     <!-- search -->
@@ -92,7 +92,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark bg-secondary mt-0 pt-0">
             <ul class="navbar-nav">
                 <li class='nav-item'>
-                    <h2 class='fs-3 mt-2 ms-3 text-light welcome'>Welcome Guest</h2></a>
+                    <h2 class='fs-3 mt-2 ms-3 p-0 text-light welcome'>Welcome Guest</h2>
                 </li>
             </ul>
         </nav>
@@ -107,7 +107,18 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent1">
                     <ul class="navbar-nav m-auto">
-
+                        <% data.forEach(category => { %>
+                        <li class='nav-item px-4 fw-bold d-flex justify-content-between mt-0'>
+                            <div>
+                                <a href='' class='nav-link text-dark d-flex justify-content-center align-item-center' style='width:80px; height:80px;'>
+                                    <img src='/images/<%= category.category_image %>' width=70px height=70px class='p-0 mb-0'>
+                                </a>
+                                <p class='m-0 p-0 d-flex justify-content-center align-item-center'>
+                                    <a href='' class='nav-link text-dark m-auto p-0 d-inline-block m-0'><%= category.category_title %></a>
+                                </p>
+                            </div>
+                        </li>
+                        <% }); %>
                     </ul>
                 </div>
             </div>
@@ -119,8 +130,18 @@
             <div class="row">
                 <div class="col md-12">
                     <div class="row">
-
-
+                        <div class='col-md-3 mb-2'>                                    
+                            <div class='card'>                                   
+                                <img src='' class='card-img-top' alt='$product_title'>
+                                <div class='card-body'>
+                                    <h5 class='card-title'>product_title</h5>
+                                    <p class='card-text'>product_description</p>
+                                    <p>Price: <i class='fa fa-inr' aria-hidden='true'></i>product_price</p>
+                                    <a href='' class='btn btn-info mb-2'>Add to cart</a>
+                                    <a href='' class='btn btn-secondary mb-2' target='_blank'>View more</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
