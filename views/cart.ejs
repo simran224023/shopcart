@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopcart</title>
+    <!-- favicon -->
+    <link rel="icon" href="https://i.imgur.com/SkliARr.png" type="image/x-icon">
+    <link rel="shortcut icon" href="https://i.imgur.com/SkliARr.png" type="image/x-icon">
+
+    <!-- Bootstrap CSS Link -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- Font Awesome link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- CSS File -->
+    <link href="style.css" rel="stylesheet">
+    </link>
+
+    <style>
+        body {
+            padding-top: 76px;
+            background-color: eee;
+            padding-bottom: 76px;
+        }
+
+        .logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Nav Bar -->
+    <div class="container-fluid p-0">
+        <!-- First Child -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-info fixed-top">
+            <div class="container-fluid">
+                <div style="width:250px; height:60px;" class="d-flex">
+                    <a href="/"><img src="https://i.imgur.com/SkliARr.png" alt="" class="logo"></a>
+                    <a href="/" class="d-flex align-items-center text-decoration-none">
+                        <h3 class="text-center fw-2 text-warning pt-1 title ps-0 ms-0">Shopcart</h3>
+                    </a>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link ms-2" href="/register">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ms-2" href="">My Account</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ms-2" href="/contactUs">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active ms-2" href="/cart"><i class="fa-solid fa-cart-shopping"></i><sup
+                                    class="fs-5"></sup></a>
+                        </li>
+                    </ul>
+                    <a class='btn btn-danger text-light ms-4 px-3' href=''>Login</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Second Child -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-secondary mt-0 pt-0">
+            <ul class="navbar-nav">
+                <li class='nav-item'>
+                    <h2 class='fs-3 mt-2 ms-3 text-light welcome'>Welcome Guest</h2>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Third child -->
+        <div class="container">
+            <div class="row">
+                <form action="" method="post">
+                    <table class="table table-bordered text-center mt-4 bg-light">
+
+
+                        <!-- php code -->
+                        <thead>
+                            <tr>
+                                <th>Product Title</th>
+                                <th>Product Image</th>
+                                <th>Total Price</th>
+                                <th>Operation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+
+
+                            <tr style="border-top: 2px solid black;">
+                                <td></td>
+                                <td><img src="" alt="" class="cart_img" style="object-fit:contain;"></td>
+                                <!-- <td><input type="number" n-ame="quantity_items" value="<?php// echo $quantity_num; ?>" class="text-center w-50" min="1" id="quan"></td> -->
+                                <td><i class="fa fa-inr fs-6" aria-hidden="true"></i></td>
+                                <!-- <td><a href="cart.php?product_update_id=<?php //echo $product_id;?>" class="btn btn-info px-2 py-1">Update Item</a></td> -->
+
+                                <td><a href="" class="btn btn-info px-2 py-1" name="remove_cart"
+                                        onclick="return chkdel()">Remove Item</a></td>
+                                <!-- <td><input type="submit" value="Remove Item" class="bg-info px-2 py-1" name="remove_cart"></td> -->
+                                <!-- <td><input type="submit" value="Update Item" class="bg-info px-2 py-1" name="update_cart"></td> -->
+                                <script>
+                                    function chkdel() {
+                                        return confirm("Are you sure you want to delete this product?");
+                                    }
+                                </script>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- subtotal -->
+                    <div class="d-flex mb-5">
+                        <h4 class='px-3'>Subtotal:<strong class='text-info'> <i class='fa fa-inr fs-5'
+                                    aria-hidden='true'></i></strong> </h4>
+                        <a href=''><input type='submit' class='bg-info px-3 py-2 border-0' value='Continue Shopping'
+                                name='continue_shopping'></a>
+                        <input type='submit' class='bg-secondary px-3  py-2 border-0 mx-2 text-light' value='Checkout'
+                            name='checkout_btn'></a>
+                        <input type='submit' class='bg-info px-3 py-2 border-0' value='Continue Shopping'
+                            name='continue_shopping'>
+
+                    </div>
+            </div>
+        </div>
+        </form>
+
+
+
+
+
+        <!-- Last Child -->
+        <!-- include footer -->
+        <div class="bg-info text-center py-1 fixed-bottom">
+            <p class="mt-2">All Rights Reserved &copy;- Designed by Simran Saini-2023</p>
+        </div>
+
+    </div>
+
+
+    <!-- Bootstrap JS Link -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

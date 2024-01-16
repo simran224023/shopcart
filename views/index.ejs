@@ -43,8 +43,8 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-info fixed-top">
             <div class="container-fluid">
                 <div style="width:250px; height:60px;" class="d-flex">
-                    <a href=""><img src="https://i.imgur.com/SkliARr.png" alt="" class="logo"></a>
-                    <a href="" class="d-flex align-items-center text-decoration-none">
+                    <a href="/"><img src="https://i.imgur.com/SkliARr.png" alt="" class="logo"></a>
+                    <a href="/" class="d-flex align-items-center text-decoration-none">
                         <h3 class="text-center fw-2 text-warning pt-1 title ps-0 ms-0">Shopcart</h3>
                     </a>
                 </div>
@@ -57,7 +57,7 @@
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                         <li class="nav-item">
-                            <a class="nav-link ms-2" href="">Register</a>
+                            <a class="nav-link ms-2" href="/register">Register</a>
                         </li>
 
                         <li class="nav-item">
@@ -65,10 +65,10 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link ms-2" href="">Contact</a>
+                            <a class="nav-link ms-2" href="/contactUs">Contact</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link ms-2" href=""><i class="fa-solid fa-cart-shopping"></i><sup class="fs-5">
+                            <a class="nav-link ms-2" href="/cart"><i class="fa-solid fa-cart-shopping"></i><sup class="fs-5">
 
                                 </sup></a>
                         </li>
@@ -79,11 +79,28 @@
                         </li>
                     </ul>
                     <!-- search -->
-                    <form class="d-flex" action="/search" method="post" id="searchForm">
+                    <form class="d-flex" action="/search" method="get" id="searchForm">
                         <input class="form-control me-2 w-100" type="search" placeholder="Search" aria-label="Search"
-                            name="searchTerm" id="searchTerm">
-                        <!-- <input type="submit" value="Search" class="btn btn-outline-light" name="search_data_product"> -->
+                            name="q" id="searchTerm">
+                        <a class='btn btn-danger text-light ms-4 px-3' href=''>Login</a>
                     </form>
+
+                    <script>
+                        // Listen for the input event on the search input field
+                        document.getElementById("searchTerm").addEventListener("keyup", function () {
+                            if(event.key === "Enter")
+                            submitForm();
+                        });
+
+                        function submitForm() {
+                            const searchValue = document.getElementById("searchTerm").value.trim();
+                            if (searchValue) {
+                                // Append the search term to the URL and trigger the form submission
+                                document.getElementById("searchForm").action = `/search/${encodeURIComponent(searchValue)}`;
+                                document.getElementById("searchForm").submit();
+                            }
+                        }
+                    </script>
                 </div>
             </div>
         </nav>
@@ -117,7 +134,8 @@
                                             class='p-0 mb-0'>
                                     </a>
                                     <p class='m-0 p-0 d-flex justify-content-center align-item-center'>
-                                        <a href='/getCategory/<%= category.category_id %>' class='nav-link text-dark m-auto p-0 d-inline-block m-0'>
+                                        <a href='/getCategory/<%= category.category_id %>'
+                                            class='nav-link text-dark m-auto p-0 d-inline-block m-0'>
                                             <%= category.category_title %>
                                         </a>
                                     </p>
@@ -138,28 +156,29 @@
                         <% if (products.length<=0) { %>
                             <h2 class='text-center text-danger fs-1 fw-bold mt-5'>No Stock for this category</h2>
                             <% }else{ %>
-                        <% products.forEach(product=> { %>
-                            <div class='col-md-3 mb-2'>
-                                <div class='card'>
-                                    <img src='/images/<%= product.product_image1 %>' class='card-img-top'
-                                        alt='<%= product.product_title %>' width="170px" height="170px"
-                                        style="object-fit: contain;">
-                                    <div class='card-body'>
-                                        <h5 class='card-title'>
-                                            <%= product.product_title %>
-                                        </h5>
-                                        <p class='card-text'>
-                                            <%= product.product_description %>
-                                        </p>
-                                        <p>Price: <i class='fa fa-inr' aria-hidden='true'></i>
-                                            <%= product.product_price %>
-                                        </p>
-                                        <a href='' class='btn btn-info mb-2'>Add to cart</a>
-                                        <a href='/viewmore/<%= product.product_id %>' class='btn btn-secondary mb-2' target='_blank'>View more</a>
+                                <% products.forEach(product=> { %>
+                                    <div class='col-md-3 mb-2'>
+                                        <div class='card'>
+                                            <img src='/images/<%= product.product_image1 %>' class='card-img-top'
+                                                alt='<%= product.product_title %>' width="170px" height="170px"
+                                                style="object-fit: contain;">
+                                            <div class='card-body'>
+                                                <h5 class='card-title'>
+                                                    <%= product.product_title %>
+                                                </h5>
+                                                <p class='card-text'>
+                                                    <%= product.product_description %>
+                                                </p>
+                                                <p>Price: <i class='fa fa-inr' aria-hidden='true'></i>
+                                                    <%= product.product_price %>
+                                                </p>
+                                                <a href='' class='btn btn-info mb-2'>Add to cart</a>
+                                                <a href='/viewmore/<%= product.product_id %>'
+                                                    class='btn btn-secondary mb-2' target='_blank'>View more</a>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <% }); }%>
+                                    <% }); }%>
                     </div>
                 </div>
             </div>

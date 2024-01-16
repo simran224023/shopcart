@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopcart Contact Us</title>
+    <!-- favicon -->
+    <link rel="icon" href="https://i.imgur.com/SkliARr.png" type="image/x-icon">
+    <link rel="shortcut icon" href="https://i.imgur.com/SkliARr.png" type="image/x-icon">
+    
+    <!-- Bootstrap CSS Link -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- Font Awesome link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- CSS File -->
+    <link href="style.css" rel="stylesheet" ></link>
+    <style>
+        body
+        {
+            padding-top:76px;
+        }
+        .logo
+        {
+            width: 100%;
+            height: 100%;
+            object-fit:contain;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Nav Bar -->
+    <div class="container-fluid p-0">
+       <!-- First Child -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-info fixed-top">
+            <div class="container-fluid">
+                <div style="width:250px; height:60px;" class="d-flex">
+                    <a href="/"><img src="https://i.imgur.com/SkliARr.png" alt="" class="logo"></a>
+                    <a href="/" class="d-flex align-items-center text-decoration-none"><h3 class="text-center fw-2 text-warning pt-1 title ps-0 ms-0">Shopcart</h3></a>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        
+                                <li class="nav-item">
+                                    <a class="nav-link ms-2" href="/register">Register</a>
+                                </li>
+                       
+                        <li class="nav-item">
+                            <a class="nav-link ms-2 active" href="/contactUs">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ms-2" href="/cart"><i class="fa-solid fa-cart-shopping"></i><sup class="fs-5"></sup></a>
+                        </li>
+                        <li class="nav-item">
+                         <a class="nav-link ms-2" href="#">Total Price: <i class="fa fa-inr fs-6" aria-hidden="true" ></i></a>
+                        </li>
+                    </ul>
+                    <!-- search -->
+                    <form class="d-flex" action="/search" method="get" id="searchForm">
+                        <input class="form-control me-2 w-100" type="search" placeholder="Search" aria-label="Search"
+                            name="q" id="searchTerm">
+                        <a class='btn btn-danger text-light ms-4 px-3' href=''>Login</a>
+                    </form>
+
+                    <script>
+                        // Listen for the input event on the search input field
+                        document.getElementById("searchTerm").addEventListener("keyup", function () {
+                            if(event.key === "Enter")
+                            submitForm();
+                        });
+
+                        function submitForm() {
+                            const searchValue = document.getElementById("searchTerm").value.trim();
+                            if (searchValue) {
+                                // Append the search term to the URL and trigger the form submission
+                                document.getElementById("searchForm").action = `/search/${encodeURIComponent(searchValue)}`;
+                                document.getElementById("searchForm").submit();
+                            }
+                        }
+                    </script>
+                </div>
+            </div>
+        </nav>
+
+
+        <h2 class="text-center fs-1 fw-bold text-dark pt-3 mt-3">Contact Us</h2>
+        <div class="container d-flex justify-content-center">
+            <div style="background-color:#ddd;border-radius:15px;" class="py-5 px-5">
+                <table>
+                    <div>
+                        <tr>
+                            <td>
+                                <i class="fa-solid fa-phone px-3 py-3 bg-info fs-3" style="border-radius:50%;"></i>
+                            </td>
+                            <td class="p-0 m-0" style="text-align:left;">
+                                <div class="mx-4"> 
+                                    <h4  class="fw-bold fs-3 my-0">Phone:</h4>
+                                    <p class="fw-bold fs-4" style="color:#444;">+123-456-7890</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </div>
+    
+                    <div class="d-flex align-items-center justify-content-center">
+                        <tr>
+                            <td>
+                                <i class="fa-solid fa-envelope px-3 py-3 bg-info fs-3" style="border-radius:50%;"></i>
+                            </td>
+                            <td class="p-0 m-0" style="text-align:left;">
+                                <div class="mx-4">
+                                    <h4 class="fw-bold fs-3 my-0">Email:</h4>
+                                    <p class="fw-bold fs-4" style="color:#444;">team26@shopcart.com</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </div>
+    
+                    <div class="d-flex align-items-center justify-content-center">
+                        <tr>
+                            <td>
+                                <i class="fa-solid fa-location-dot px-3 py-3 bg-info fs-3" style="border-radius:50%;"></i>
+                            </td>
+                            <td class="p-0 m-0" style="text-align:left;">
+                                <div class="mx-4">
+                                    <h4 class="fw-bold fs-3 my-0">Address:</h4>
+                                    <p class="fw-bold fs-4" style="color:#444;">123, Jagadhri, Yamunanagar, Haryana</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </div>
+                </table>
+            </div>
+        </div>
+    </div>
+
+        <!-- footer -->
+        
+    </div>
+    
+
+    <!-- Bootstrap JS Link -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>
