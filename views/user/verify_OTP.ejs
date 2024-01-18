@@ -29,6 +29,12 @@
     </style>
 </head>
 <body>
+    <% if (showAlert) { %>
+        <script>
+          alert("<%= alertMessage %>");
+          window.location.href = "<%= redirectUrl %>";
+        </script>
+      <% } %>
     <div class="container-fluid my-3 mt-0 p-0 mb-5">
         <nav class="navbar navbar-expand-lg navbar-light bg-info p-1">
             <div class="container-fluid pl-0">
@@ -49,7 +55,7 @@
                     <div class="form-outline mb-3">
                         <label for="otp" class="form-label mb-0 fw-bold text-center fs-5">Enter OTP</label>
                         <input type="text" id="otp" name="otp" class="form-control" placeholder="Enter otp">
-                        <span  class="text-danger fw-bold" style="font-size:10px;"></span>
+                        <span  class="text-danger fw-bold" style="font-size:10px;"><%= message  %></span>
                     </div>
                     <!-- Buttons -->
                     <div class="mt-2 pt-2">

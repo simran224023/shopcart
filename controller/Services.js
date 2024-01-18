@@ -53,7 +53,7 @@ async function getProductsBySearchTerm(searchTerm) {
   });
 }
 
-async function VerifyData(user_email,user_mobile) {
+async function VerifyData(user_email, user_mobile) {
   const query = `
     SELECT * FROM user_table
     WHERE user_email = ? or user_mobile = ?;
@@ -61,21 +61,44 @@ async function VerifyData(user_email,user_mobile) {
 
   try {
     const result = await new Promise((resolve, reject) => {
-      conn.query(
-        query,
-        [user_email,user_mobile],
-        (err, result) => {
-          if (err) reject(err);
-          else resolve(result);
-        }
-      );
+      conn.query(query, [user_email, user_mobile], (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
     });
 
     return result;
   } catch (error) {
     console.error("Error in VerifyData:", error);
-    throw error; 
+    throw error;
   }
+}
+
+async function InsertUserData(
+  username,
+  email,
+  imagePath,
+  hashedPassword,
+  address,
+  contact
+) {
+  const query = `
+    INSERT INTO user_table 
+    (user_name, user_email, user_password, user_image, user_address, user_mobile) 
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+
+  const values = [username, email, hashedPassword, imagePath, address, contact];
+
+  return new Promise((resolve, reject) => {
+    conn.query(query, values, (error, results) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(results);
+      }
+    });
+  });
 }
 
 module.exports = {
@@ -85,4 +108,5 @@ module.exports = {
   getProductsByCategoryId,
   getProductsBySearchTerm,
   VerifyData,
+  InsertUserData,
 };

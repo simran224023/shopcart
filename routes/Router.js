@@ -1,8 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+// const multer = multer({ dest: "uploads/" });
 const controller = require("../controller/controllerfunctions");
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Save files in the 'uploads' directory
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+const upload = multer({ storage: storage });
 
 router.get("/", controller.IndexPage);
 router.get("/getCategory/:id", controller.ProductPage);
@@ -20,5 +29,7 @@ router.post(
 router.get("/register/verify", controller.VerifyOTPPage)
 router.post("/register/verify", controller.Verification)
 router.get("/register/resendOTP", controller.ResendOTP)
+router.get("/register/email", controller.EmailIntegration)
+router.get('/login', controller.LoginPage)
 
 module.exports = router;
