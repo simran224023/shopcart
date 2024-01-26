@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,27 +8,28 @@
     <!-- favicon -->
     <link rel="icon" href="https://i.imgur.com/SkliARr.png" type="image/x-icon">
     <link rel="shortcut icon" href="https://i.imgur.com/SkliARr.png" type="image/x-icon">
-    
+
     <!-- Bootstrap CSS Link -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
-    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <!-- Font Awesome link -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
-    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- CSS File -->
-    <link href="style.css" rel="stylesheet" ></link>
+    <link href="style.css" rel="stylesheet">
+    </link>
     <style>
-        body
-        {
-            padding-top:76px;
+        body {
+            padding-top: 76px;
         }
-        .logo
-        {
+
+        .logo {
             width: 100%;
             height: 100%;
-            object-fit:contain;
+            object-fit: contain;
         }
     </style>
 </head>
@@ -35,57 +37,78 @@
 <body>
     <!-- Nav Bar -->
     <div class="container-fluid p-0">
-       <!-- First Child -->
+        <!-- First Child -->
         <nav class="navbar navbar-expand-lg navbar-light bg-info fixed-top">
             <div class="container-fluid">
                 <div style="width:250px; height:60px;" class="d-flex">
                     <a href="/"><img src="https://i.imgur.com/SkliARr.png" alt="" class="logo"></a>
-                    <a href="/" class="d-flex align-items-center text-decoration-none"><h3 class="text-center fw-2 text-warning pt-1 title ps-0 ms-0">Shopcart</h3></a>
+                    <a href="/" class="d-flex align-items-center text-decoration-none">
+                        <h3 class="text-center fw-2 text-warning pt-1 title ps-0 ms-0">Shopcart</h3>
+                    </a>
                 </div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        
+
+                        <% if (!isLoggedIn) { %>
+                            <li class="nav-item">
+                                <a class="nav-link ms-2" href="/register">Register</a>
+                            </li>
+                            <% }else{%>
                                 <li class="nav-item">
-                                    <a class="nav-link ms-2" href="/register">Register</a>
+                                    <a class="nav-link ms-2" href="/account">My Account</a>
                                 </li>
-                       
-                        <li class="nav-item">
-                            <a class="nav-link ms-2 active" href="/contactUs">Contact</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link ms-2" href="/cart"><i class="fa-solid fa-cart-shopping"></i><sup class="fs-5"></sup></a>
-                        </li>
-                        <li class="nav-item">
-                         <a class="nav-link ms-2" href="#">Total Price: <i class="fa fa-inr fs-6" aria-hidden="true" ></i></a>
-                        </li>
+                                <%} %>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link ms-2 active" href="/contactUs">Contact</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link ms-2" href="/cart"><i
+                                                class="fa-solid fa-cart-shopping"></i><sup class="fs-5">
+                                                <%= totalQuantity %>
+
+                                            </sup></a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link ms-2" href="#" id="totalPriceLink">Total Price: <i
+                                                class="fa fa-inr fs-6" aria-hidden="true"></i><%= totalAmount %>
+                                        </a>
+                                    </li>
                     </ul>
                     <!-- search -->
-                    <form class="d-flex" action="/search" method="get" id="searchForm">
+                    <!-- <form class="d-flex" action="/search" method="get" id="searchForm">
                         <input class="form-control me-2 w-100" type="search" placeholder="Search" aria-label="Search"
                             name="q" id="searchTerm">
-                        <a class='btn btn-danger text-light ms-4 px-3' href=''>Login</a>
-                    </form>
+                        </form> -->
+                    <% if (!isLoggedIn) { %>
+                        <a class='btn btn-danger text-light ms-4 px-3' href='/login'>Login</a>
+                        <%}else{%>
+                            <a class='btn btn-danger text-light ms-4 px-3' href='/logout'>Logout</a>
+                            <%}%>
 
-                    <script>
-                        // Listen for the input event on the search input field
-                        document.getElementById("searchTerm").addEventListener("keyup", function () {
-                            if(event.key === "Enter")
-                            submitForm();
-                        });
 
-                        function submitForm() {
-                            const searchValue = document.getElementById("searchTerm").value.trim();
-                            if (searchValue) {
-                                // Append the search term to the URL and trigger the form submission
-                                document.getElementById("searchForm").action = `/search/${encodeURIComponent(searchValue)}`;
-                                document.getElementById("searchForm").submit();
-                            }
-                        }
-                    </script>
+
+                                <script>
+                                    // Listen for the input event on the search input field
+                                    document.getElementById("searchTerm").addEventListener("keyup", function () {
+                                        if (event.key === "Enter")
+                                            submitForm();
+                                    });
+
+                                    function submitForm() {
+                                        const searchValue = document.getElementById("searchTerm").value.trim();
+                                        if (searchValue) {
+                                            // Append the search term to the URL and trigger the form submission
+                                            document.getElementById("searchForm").action = `/search/${encodeURIComponent(searchValue)}`;
+                                            document.getElementById("searchForm").submit();
+                                        }
+                                    }
+                                </script>
                 </div>
             </div>
         </nav>
@@ -101,14 +124,14 @@
                                 <i class="fa-solid fa-phone px-3 py-3 bg-info fs-3" style="border-radius:50%;"></i>
                             </td>
                             <td class="p-0 m-0" style="text-align:left;">
-                                <div class="mx-4"> 
-                                    <h4  class="fw-bold fs-3 my-0">Phone:</h4>
+                                <div class="mx-4">
+                                    <h4 class="fw-bold fs-3 my-0">Phone:</h4>
                                     <p class="fw-bold fs-4" style="color:#444;">+123-456-7890</p>
                                 </div>
                             </td>
                         </tr>
                     </div>
-    
+
                     <div class="d-flex align-items-center justify-content-center">
                         <tr>
                             <td>
@@ -122,11 +145,12 @@
                             </td>
                         </tr>
                     </div>
-    
+
                     <div class="d-flex align-items-center justify-content-center">
                         <tr>
                             <td>
-                                <i class="fa-solid fa-location-dot px-3 py-3 bg-info fs-3" style="border-radius:50%;"></i>
+                                <i class="fa-solid fa-location-dot px-3 py-3 bg-info fs-3"
+                                    style="border-radius:50%;"></i>
                             </td>
                             <td class="p-0 m-0" style="text-align:left;">
                                 <div class="mx-4">
@@ -141,13 +165,53 @@
         </div>
     </div>
 
-        <!-- footer -->
-        
+    <div class="bg-info text-center py-1 fixed-bottom">
+        <p class="mt-2">All Rights Reserved &copy;- Designed by Simran Saini-2024</p>
     </div>
-    
+
+    </div>
+
 
     <!-- Bootstrap JS Link -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(document).on('click', '.addToCartBtn', function () {
+                // Retrieve the product ID from the data attribute
+                var product_id = $(this).data('product-id');
+                console.log(product_id);
+                $.ajax({
+                    url: `/addToCart?product_id=${product_id}`,
+                    method: 'GET',
+                    success: function (response) {
+                        // Check if the response has the expected properties
+                        if (response && response.totalQuantity !== undefined && response.totalAmount !== undefined) {
+                            // Update the total quantity on the page
+                            $('.nav-link.ms-2[href="/cart"] sup.fs-5').text(response.totalQuantity);
+
+                            // Update the total amount on the page
+                            const formattedAmount = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(parseFloat(response.totalAmount));
+                            $('#totalPriceLink').html(`Total Price: ${formattedAmount}`);
+
+
+                            // Show an alert that the item is added to the cart
+                            alert("Item is added to cart");
+                        } else {
+                            console.error('Invalid response format:', response);
+                            alert("Please Login");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.error('AJAX Error:', textStatus, errorThrown);
+                        alert("Please Login");
+                    }
+                });
+            });
+        });
+    </script>
 </body>
+
 </html>

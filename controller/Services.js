@@ -101,6 +101,143 @@ async function InsertUserData(
   });
 }
 
+async function VerifyEmail(user_email) {
+  const userQuery = "SELECT * FROM user_table WHERE user_email = ?;";
+
+  try {
+    const result = await new Promise((resolve, reject) => {
+      conn.query(userQuery, [user_email], (err, result) => {
+        if (err) reject(err);
+        else resolve(result || []); // Ensure that result is an array, even if it's falsy
+      });
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Error in VerifyData:", error);
+    throw error;
+  }
+}
+
+async function AddCart(product_id, user_id) {
+  return new Promise((resolve, reject) => {
+    // Check if the product is already in the cart for the user
+    const checkSql =
+      "SELECT * FROM cart_details WHERE product_id = ? AND user_id = ?";
+    conn.query(
+      checkSql,
+      [product_id, user_id],
+      async (checkErr, checkResult) => {
+        if (checkErr) {
+          console.error("Error checking product in cart:", checkErr);
+          reject({ success: false, message: "Internal Server Error" });
+        } else {
+          if (checkResult.length > 0) {
+            // Product is already in the cart, update quantity
+            const updateSql =
+              "UPDATE cart_details SET quantity = quantity + 1 WHERE product_id = ? AND user_id = ?";
+            conn.query(
+              updateSql,
+              [product_id, user_id],
+              (updateErr, updateResult) => {
+                if (updateErr) {
+                  console.error("Error updating quantity in cart:", updateErr);
+                  reject({ success: false, message: "Internal Server Error" });
+                } else {
+                  console.log("Quantity updated in cart");
+                  resolve({
+                    success: true,
+                    message: "Product quantity updated in cart",
+                  });
+                }
+              }
+            );
+          } else {
+            // Product is not in the cart, insert a new record
+            const insertSql =
+              "INSERT INTO cart_details (product_id, user_id) VALUES (?, ?)";
+            conn.query(
+              insertSql,
+              [product_id, user_id],
+              (insertErr, insertResult) => {
+                if (insertErr) {
+                  console.error("Error adding product to cart:", insertErr);
+                  reject({ success: false, message: "Internal Server Error" });
+                } else {
+                  console.log("Product added to cart successfully");
+                  resolve({
+                    success: true,
+                    message: "Product added to cart successfully",
+                  });
+                }
+              }
+            );
+          }
+        }
+      }
+    );
+  });
+}
+
+async function CalculateTotalAmount(user_id) {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT c.product_id, c.quantity, p.product_price
+      FROM cart_details c
+      JOIN products p ON c.product_id = p.product_id
+      WHERE c.user_id = ?
+    `;
+    conn.query(sql, [user_id], (err, result) => {
+      if (err) {
+        console.error("Error calculating total amount:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        // Calculate total amount by summing up quantity * unit price for each product
+        const totalAmount = result.reduce((total, item) => {
+          return total + item.quantity * item.product_price;
+        }, 0);
+        resolve({ success: true, totalAmount });
+      }
+    });
+  });
+}
+
+async function CalculateTotalQuantity(user_id) {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT SUM(quantity) AS total_quantity
+      FROM cart_details
+      WHERE user_id = ?
+    `;
+    conn.query(sql, [user_id], (err, result) => {
+      if (err) {
+        console.error("Error calculating total quantity:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        const totalQuantity = result[0].total_quantity || 0;
+        resolve({ success: true, totalQuantity });
+      }
+    });
+  });
+}
+
+async function FetchCartItems(user_id){
+  return new Promise((resolve,reject)=>{
+    const sql = `SELECT c.product_id, c.quantity, p.product_title, p.product_image1, p.product_price
+    FROM cart_details c
+    JOIN products p ON c.product_id = p.product_id
+    WHERE c.user_id = ?`;
+    conn.query(sql, [user_id], (err, result) => {
+      if (err) {
+        console.error("Error Fetching cart items:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, cartItems: result });
+      }
+    });
+  });
+}
+
 module.exports = {
   getCategories,
   getAllProducts,
@@ -109,4 +246,9 @@ module.exports = {
   getProductsBySearchTerm,
   VerifyData,
   InsertUserData,
+  VerifyEmail,
+  AddCart,
+  CalculateTotalAmount,
+  CalculateTotalQuantity,
+  FetchCartItems,
 };

@@ -4,13 +4,52 @@ const svgCaptcha = require("svg-captcha");
 const session = require("express-session");
 const fast2sms = require("fast-two-sms");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const fs = require("fs");
 const nodemailer = require("nodemailer");
-
+const cookie = require("cookie-parser");
+const { log } = require("console");
+const secretKey = "MAiMtInStiTute";
 async function IndexPage(req, res) {
   try {
     const categories = await services.getCategories();
     const products = await services.getAllProducts();
-    res.render("index", { categories, products });
+    const isLoggedIn = req.session.isLoggedIn;
+    const username = req.session.username;
+    const userId = req.session.userId;
+    const totalAmountResult = await services.CalculateTotalAmount(userId);
+    const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+    if (totalAmountResult.success && totalQuantityResult.success) {
+      const totalAmount = totalAmountResult.totalAmount;
+      const totalQuantity = totalQuantityResult.totalQuantity;
+      // Now you can use `totalAmount` in your render function or wherever needed
+      res.render("index", {
+        categories,
+        products,
+        isLoggedIn,
+        username,
+        totalAmount,
+        totalQuantity,
+      });
+    } else {
+      // Handle the case where calculating totalAmount failed
+      console.error(
+        "Error calculating total amount:",
+        totalAmountResult.message
+      );
+      console.error(
+        "Error calculating total amount:",
+        totalQuantityResult.message
+      );
+      res.status(500).send("Internal Server Error");
+    }
+    // res.render("index", {
+    //   categories,
+    //   products,
+    //   isLoggedIn,
+    //   username,
+    //   totalAmount,
+    // });
   } catch (error) {
     console.error("Error executing queries:", error);
     res.status(500).send("Internal Server Error");
@@ -22,7 +61,23 @@ async function ProductPage(req, res) {
     const categoryId = req.params.id;
     const categories = await services.getCategories();
     const products = await services.getProductsByCategoryId(categoryId);
-    res.render("getCategoryProducts", { categories, products });
+    const isLoggedIn = req.session.isLoggedIn;
+    const username = req.session.username;
+    const userId = req.session.userId;
+    const totalAmountResult = await services.CalculateTotalAmount(userId);
+    const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+    if (totalAmountResult.success && totalQuantityResult.success) {
+      const totalAmount = totalAmountResult.totalAmount;
+      const totalQuantity = totalQuantityResult.totalQuantity;
+      res.render("getCategoryProducts", {
+        categories,
+        products,
+        isLoggedIn,
+        username,
+        totalAmount,
+        totalQuantity,
+      });
+    }
   } catch (error) {
     console.error("Error executing queries:", error);
     res.status(500).send("Internal Server Error");
@@ -34,7 +89,23 @@ async function ViewMore(req, res) {
     const productId = req.params.id;
     const categories = await services.getCategories();
     const products = await services.getProductsByProductId(productId);
-    res.render("viewmore", { categories, products });
+    const isLoggedIn = req.session.isLoggedIn;
+    const username = req.session.username;
+    const userId = req.session.userId;
+    const totalAmountResult = await services.CalculateTotalAmount(userId);
+    const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+    if (totalAmountResult.success && totalQuantityResult.success) {
+      const totalAmount = totalAmountResult.totalAmount;
+      const totalQuantity = totalQuantityResult.totalQuantity;
+      res.render("viewmore", {
+        categories,
+        products,
+        isLoggedIn,
+        username,
+        totalAmount,
+        totalQuantity,
+      });
+    }
   } catch (error) {
     console.error("Error executing queries:", error);
     res.status(500).send("Internal Server Error");
@@ -46,20 +117,102 @@ async function SearchPage(req, res) {
     const searchTerm = req.query.q;
     const categories = await services.getCategories();
     const products = await services.getProductsBySearchTerm(searchTerm);
-    res.render("searchproducts", { categories, products, searchTerm });
+    const isLoggedIn = req.session.isLoggedIn;
+    const username = req.session.username;
+    const userId = req.session.userId;
+    const totalAmountResult = await services.CalculateTotalAmount(userId);
+    const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+    if (totalAmountResult.success && totalQuantityResult.success) {
+      const totalAmount = totalAmountResult.totalAmount;
+      const totalQuantity = totalQuantityResult.totalQuantity;
+      res.render("searchproducts", {
+        categories,
+        products,
+        searchTerm,
+        isLoggedIn,
+        username,
+        totalAmount,
+        totalQuantity,
+      });
+    }
   } catch (error) {
     console.error("Error executing queries:", error);
     res.status(500).send("Internal Server Error");
   }
 }
 
-function ContactPage(req, res) {
-  res.render("contactUs");
+async function ContactPage(req, res) {
+  const isLoggedIn = req.session.isLoggedIn;
+  const username = req.session.username;
+  const userId = req.session.userId;
+  const totalAmountResult = await services.CalculateTotalAmount(userId);
+  const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+  if (totalAmountResult.success && totalQuantityResult.success) {
+    const totalAmount = totalAmountResult.totalAmount;
+    const totalQuantity = totalQuantityResult.totalQuantity;
+    res.render("contactUs", {
+      isLoggedIn,
+      username,
+      totalAmount,
+      totalQuantity,
+    });
+  }
 }
 
-function CartPage(req, res) {
-  res.render("cart");
+async function CartPage(req, res) {
+  try {
+    const isLoggedIn = req.session.isLoggedIn;
+    const username = req.session.username;
+    const userId = req.session.userId;
+
+    const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+    const totalAmountResult = await services.CalculateTotalAmount(userId);
+    const fetchCartItemsResult = await services.FetchCartItems(userId);
+
+    if (
+      totalAmountResult.success &&
+      totalQuantityResult.success &&
+      fetchCartItemsResult.success
+    ) {
+      const totalAmount = totalAmountResult.totalAmount;
+      const totalQuantity = totalQuantityResult.totalQuantity;
+      const cartItems = fetchCartItemsResult.cartItems;
+
+      // Check if the cart is empty
+      const noItemMessage = cartItems.length === 0 ? "No Item in Cart" : "";
+
+      res.render("cart", {
+        isLoggedIn,
+        username,
+        totalQuantity,
+        totalAmount,
+        cartItems,
+        noItemMessage,
+      });
+    } else {
+      res.render("cart", {
+        isLoggedIn,
+        username,
+        totalQuantity: 0,
+        totalAmount: 0,
+        cartItems: [],
+        noItemMessage: "No Item in Cart",
+      });
+    }
+  } catch (error) {
+    console.error("Error in CartPage:", error);
+    // Handle the error
+    res.render("cart", {
+      isLoggedIn: false,
+      username: "",
+      totalQuantity: 0,
+      totalAmount: 0,
+      cartItems: [],
+      noItemMessage: "Please Login First",
+    });
+  }
 }
+
 
 const generateCaptcha = () => {
   const captchaText = svgCaptcha.create();
@@ -68,7 +221,7 @@ const generateCaptcha = () => {
     data: captchaText.data,
   };
 };
-async function sendEmail(email,name) {
+async function sendEmail(email, name) {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -111,7 +264,7 @@ function RegisterPage(req, res) {
     pass_error: "",
     conf_pass_error: "",
     add_error: "",
-    user_image:"",
+    user_image: "",
     contact_error: "",
     captcha_error: "",
     user_username: "",
@@ -137,8 +290,6 @@ async function ValidateRegister(req, res, next) {
     captcha,
   } = req.body;
   const allowedFormats = ["image/png", "image/jpeg"];
-  const user_image = req.file.filename;
-  console.log(user_image);
   const enteredCaptcha = req.body.captcha;
   const storedCaptcha = req.session.captchaText;
 
@@ -213,7 +364,7 @@ async function ValidateRegister(req, res, next) {
       user_add,
       user_contact,
       captcha,
-      user_image,
+      user_image: "",
       message: "",
       captcha_error,
       captchaText: newCaptcha.data,
@@ -238,7 +389,7 @@ async function ValidateRegister(req, res, next) {
         captcha_error,
         user_username,
         user_mail,
-        user_image,
+        user_image: "",
         user_pass,
         conf_user_pass,
         user_add,
@@ -247,7 +398,6 @@ async function ValidateRegister(req, res, next) {
         message,
       });
     } else {
-      req.session.imagePath = req.file.filename;
       req.session.userData = {
         user_username,
         user_mail,
@@ -260,29 +410,45 @@ async function ValidateRegister(req, res, next) {
       if (generatedOTP !== null) {
         req.session.OTP = generatedOTP;
       }
-      return res.redirect("/register/verify");
+      try {
+        const user_image = req.file.buffer;
+        const imagePath = "uploads/" + req.file.originalname;
+        const imageName = req.file.originalname;
+        fs.writeFileSync(imagePath, user_image);
+        req.session.imagePath = imageName;
+        return res.redirect("/register/verify");
+      } catch (error) {
+        console.error("Error handling image upload:", error);
+      }
     }
   } catch (error) {
     console.error("Error in ValidateRegister:", error);
-    // return res.status(500).json({
-    //   success: false,
-    //   error: "Internal Server Error",
-    //   message: "An error occurred while processing your request.",
-    // });
   }
 }
 
 async function VerifyOTPPage(req, res) {
-  return res.render("user/verify_OTP", { message: "", showAlert:"", alertMessage:"",redirectUrl:"" });
+  return res.render("user/verify_OTP", {
+    message: "",
+    showAlert: "",
+    alertMessage: "",
+    redirectUrl: "",
+  });
 }
 
 function Verification(req, res) {
   const generatedOTP = req.session.OTP;
+  console.log("Generated Otp===", generatedOTP);
   const userEnteredOTP = req.body.otp;
+  console.log("Entered Otp===", userEnteredOTP);
   if (userEnteredOTP == generatedOTP) {
     res.redirect("/register/email");
   } else {
-    return res.render("user/verify_OTP", { message: "Incorrect OTP",showAlert:"", alertMessage:"", redirectUrl:""  });
+    return res.render("user/verify_OTP", {
+      message: "Incorrect OTP",
+      showAlert: "",
+      alertMessage: "",
+      redirectUrl: "",
+    });
   }
 }
 
@@ -304,7 +470,7 @@ async function sendOTP(phoneNumber) {
   // if (response.return === true) {
   console.log("OTP===", otp);
   // console.log("OTP sent successfully!");
-  // return otp;
+  return otp;
   //   } else {
   //     console.error("Failed to send OTP. Error:", response.message);
   //     throw new Error("Failed to send OTP");
@@ -325,11 +491,21 @@ async function ResendOTP(req, res) {
       req.session.OTP = generatedOTP;
       return res.redirect("/register/verify");
     } else {
-      return res.render("user/verify_OTP", { error: "Failed to resend OTP",showAlert:"", alertMessage:"", redirectUrl:"" });
+      return res.render("user/verify_OTP", {
+        error: "Failed to resend OTP",
+        showAlert: "",
+        alertMessage: "",
+        redirectUrl: "",
+      });
     }
   } catch (error) {
     console.error("Error in ResendOTP:", error);
-    res.render("user/verify_OTP", { message: "Internal Server Error",showAlert:"", alertMessage:"", redirectUrl:""  });
+    res.render("user/verify_OTP", {
+      message: "Internal Server Error",
+      showAlert: "",
+      alertMessage: "",
+      redirectUrl: "",
+    });
   }
 }
 
@@ -356,12 +532,12 @@ async function EmailIntegration(req, res) {
     // Check if the insertion was successful
     if (InsertUserData) {
       // Send a success response
-      await sendEmail(email,username);
-      res.render('user/verify_OTP', {
-        message:"",
+      await sendEmail(email, username);
+      res.render("user/verify_OTP", {
+        message: "",
         showAlert: true,
-        alertMessage: 'You are Successfully Registered in Shopcart',
-        redirectUrl: '/login', // Redirect URL after the alert
+        alertMessage: "You are Successfully Registered in Shopcart",
+        redirectUrl: "/login", // Redirect URL after the alert
       });
     } else {
       // Handle the case where insertion fails
@@ -378,7 +554,286 @@ async function EmailIntegration(req, res) {
 }
 
 async function LoginPage(req, res) {
-  res.render("user/login");
+  let captchaText = generateCaptcha();
+  req.session.captchaText = captchaText.text;
+  res.render("user/login", {
+    email_error: "",
+    password_error: "",
+    email_value: "",
+    password_value: "",
+    captchaText: captchaText.data,
+    captcha_error: "",
+    showAlert: "",
+    redirectUrl: "",
+    alertMessage: "",
+  });
+}
+
+async function LoginCredentials(req, res) {
+  const { user_email, user_password, captcha } = req.body;
+  const enteredCaptcha = captcha || ""; // Ensure enteredCaptcha is not undefined
+  const storedCaptcha = req.session.captchaText || "";
+
+  const errors = {
+    email: !user_email ? "Email is required" : "",
+    password: !user_password ? "Password is required" : "",
+    captcha: !enteredCaptcha
+      ? "Captcha is required"
+      : enteredCaptcha !== storedCaptcha
+      ? "Invalid Captcha"
+      : "",
+  };
+
+  if (errors.email || errors.password || errors.captcha) {
+    const newCaptcha = await generateCaptcha();
+    req.session.captchaText = newCaptcha.text;
+
+    return res.render("user/login", {
+      email_value: user_email,
+      password_value: user_password,
+      email_error: errors.email,
+      password_error: errors.password,
+      captcha_error: errors.captcha,
+      captchaText: newCaptcha.data,
+      showAlert: "",
+      redirectUrl: "",
+      alertMessage: "",
+    });
+  }
+
+  const VerifyUser = await services.VerifyEmail(user_email);
+  console.log("VerifyUser========", VerifyUser);
+  if (VerifyUser && VerifyUser.length > 0) {
+    const user = VerifyUser[0];
+    const bcryptPassword = await bcrypt.compare(
+      user_password,
+      user.user_password
+    );
+    if (bcryptPassword) {
+      const userName = user.user_name;
+      const userId = user.user_id;
+      const expiresInHours = 90;
+      const expirationTime = new Date(
+        Date.now() + expiresInHours * 60 * 60 * 1000
+      ); // Calculate expiration time
+      const token = jwt.sign({ user_email }, secretKey, {
+        expiresIn: `${expiresInHours}h`,
+      });
+      res.cookie("token", token, {
+        httpOnly: true,
+        expires: expirationTime, // Set the expiration time
+        // Other cookie options if needed
+      });
+      req.session.isLoggedIn = true;
+      req.session.username = userName;
+      req.session.userId = userId;
+      const isLoggedIn = req.session.isLoggedIn;
+      const username = req.session.username;
+      return res.render("user/login", {
+        showAlert: "true",
+        redirectUrl: "/",
+        alertMessage: `You are Successfully LoggedIn`,
+        email_value: "",
+        password_value: "",
+        email_error: "",
+        password_error: "",
+        captcha_error: "",
+        captchaText: "",
+      });
+    } else {
+      const newCaptcha = await generateCaptcha();
+      req.session.captchaText = newCaptcha.text;
+
+      return res.render("user/login", {
+        email_value: user_email,
+        password_value: user_password,
+        email_error: errors.email,
+        password_error: "Incorrect Password",
+        captcha_error: errors.captcha,
+        captchaText: newCaptcha.data,
+        showAlert: "",
+        redirectUrl: "",
+        alertMessage: "",
+      });
+    }
+  } else {
+    const newCaptcha = await generateCaptcha();
+    req.session.captchaText = newCaptcha.text;
+
+    return res.render("user/login", {
+      email_value: user_email,
+      password_value: user_password,
+      email_error: "Email not found",
+      password_error: errors.password,
+      captcha_error: errors.captcha,
+      captchaText: newCaptcha.data,
+      showAlert: "",
+      redirectUrl: "",
+      alertMessage: "",
+    });
+  }
+}
+
+const verifyToken = (req, res, next) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.redirect("/login");
+  }
+
+  const decoded = jwt.verify(token, secretKey, (err, authData) => {
+    if (err) {
+      res.redirect("/login");
+    }
+    next();
+  });
+};
+
+async function ForgotPasswordPage(req, res) {
+  res.render("user/forgot", {
+    mail_error: "",
+    userEmail: "",
+  });
+}
+
+async function SendResetPasswordMail(req, res) {
+  const userEmail = req.body.user_email;
+
+  if (!userEmail) {
+    return res.render("user/forgot", {
+      mail_error: "Email is required",
+      userEmail,
+    });
+  }
+  const VerifyUser = await services.VerifyEmail(userEmail);
+  console.log("VerifyUser===", VerifyUser);
+  if (VerifyUser.length === 0) {
+    return res.render("user/forgot", {
+      mail_error: "Email is not valid",
+      userEmail,
+    });
+  }
+}
+
+async function Logout(req, res) {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Error destroying session:", err);
+    }
+    res.clearCookie("token");
+    res.redirect("/");
+  });
+}
+
+async function ProfilePage(req, res) {
+  const isLoggedIn = req.session.isLoggedIn;
+  const username = req.session.username;
+  res.render("user/myprofile", { isLoggedIn, username });
+}
+
+async function AddToCart(req, res) {
+  const productId = req.query.product_id;
+  const userId = req.session.userId;
+  console.log("User_Id===", userId);
+
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Please Login First",
+    });
+  }
+
+  try {
+    console.log("Adding to cart:", productId, userId);
+    const added = await services.AddCart(productId, userId);
+    const totalAmountResult = await services.CalculateTotalAmount(userId);
+    const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+    const totalAmount = totalAmountResult.totalAmount;
+    const totalQuantity = totalQuantityResult.totalQuantity;
+    console.log("Added to cart result:", added);
+    res.status(200).json({
+      success: true,
+      message: "Product added to cart successfully",
+      totalQuantity,
+      totalAmount,
+    });
+  } catch (error) {
+    console.error("Error adding product to cart:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
+
+// Update quantity controller
+async function updateQuantity(req, res) {
+  const { productId, newQuantity } = req.body;
+  const userId = req.session.userId;
+
+  try {
+    // Update quantity in the database
+    await conn.query(
+      "UPDATE cart_details SET quantity = ? WHERE product_id = ? AND user_id = ?",
+      [newQuantity, productId, userId]
+    );
+
+    // Calculate total amount and quantity after the update
+    const { totalAmount, totalQuantity } = await recalculateTotals(userId);
+
+    res.json({
+      success: true,
+      message: "Quantity updated successfully",
+      totalAmount,
+      totalQuantity,
+    });
+  } catch (error) {
+    console.error("Error updating quantity:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
+
+// Remove item controller
+async function removeItem(req, res) {
+  const { productId } = req.body;
+  const userId = req.session.userId;
+
+  try {
+    // Remove item from the database
+    await conn.query(
+      "DELETE FROM cart_details WHERE product_id = ? AND user_id = ?",
+      [productId, userId]
+    );
+
+    // Calculate total amount and quantity after the removal
+    const { totalAmount, totalQuantity } = await recalculateTotals(userId);
+    let message = "Item removed successfully";
+    let noItemMessage = ""; // Initialize noItemMessage variable
+
+    if (totalQuantity == 0) {
+      noItemMessage = "No items in the cart";
+      message; // Assign message to noItemMessage if totalQuantity is zero
+    }
+
+    res.json({
+      success: true,
+      message,
+      totalAmount,
+      totalQuantity,
+      noItemMessage,
+    });
+  } catch (error) {
+    console.error("Error removing item:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
+
+// Helper function to recalculate total amount and quantity
+async function recalculateTotals(userId) {
+  const totalAmountResult = await services.CalculateTotalAmount(userId);
+  const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+
+  return {
+    totalAmount: totalAmountResult.totalAmount,
+    totalQuantity: totalQuantityResult.totalQuantity,
+  };
 }
 
 module.exports = {
@@ -397,4 +852,13 @@ module.exports = {
   ResendOTP,
   EmailIntegration,
   LoginPage,
+  LoginCredentials,
+  verifyToken,
+  ForgotPasswordPage,
+  SendResetPasswordMail,
+  Logout,
+  ProfilePage,
+  AddToCart,
+  updateQuantity,
+  removeItem,
 };
