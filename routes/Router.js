@@ -31,5 +31,5 @@ router.get("/account",controller.verifyToken,controller.ProfilePage)
 router.get("/addToCart",controller.AddToCart)
 router.post('/updateQuantity', controller.updateQuantity);
 router.post('/removeItem', controller.removeItem);
-
+router.post('/getPendingOrders', controller.verifyToken, controller.getPendingOrders);
 module.exports = router;

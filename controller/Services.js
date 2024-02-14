@@ -221,8 +221,8 @@ async function CalculateTotalQuantity(user_id) {
   });
 }
 
-async function FetchCartItems(user_id){
-  return new Promise((resolve,reject)=>{
+async function FetchCartItems(user_id) {
+  return new Promise((resolve, reject) => {
     const sql = `SELECT c.product_id, c.quantity, p.product_title, p.product_image1, p.product_price
     FROM cart_details c
     JOIN products p ON c.product_id = p.product_id
@@ -238,6 +238,41 @@ async function FetchCartItems(user_id){
   });
 }
 
+async function fetchProfileImage(user_id) {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT user_image
+    FROM user_table
+    WHERE user_id = ?`;
+    conn.query(sql, [user_id], (err, result) => {
+      if (err) {
+        console.error("Error Fetching image:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, Image: result });
+      }
+    });
+  });
+}
+
+async function getPendingOrders(user_id) {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT count(*) as count
+        FROM orders_pending
+        WHERE user_id = ? and order_status='pending'`;
+        conn.query(sql, [user_id], (err, rows) => {
+            if (err) {
+                console.error("Error Fetching data:", err);
+                reject({ success: false, message: "Internal Server Error" });
+            } else {
+                const pendingOrdersCount = rows[0].count;
+console.log("pendingOrdersCount===", pendingOrdersCount);
+console.log("Rows=====", rows);
+                resolve({ success: true, pendingOrdersCount });
+            }
+        });
+    });
+}
+
 module.exports = {
   getCategories,
   getAllProducts,
@@ -251,4 +286,6 @@ module.exports = {
   CalculateTotalAmount,
   CalculateTotalQuantity,
   FetchCartItems,
+  fetchProfileImage,
+  getPendingOrders
 };

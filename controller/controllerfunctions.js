@@ -297,13 +297,13 @@ async function ValidateRegister(req, res, next) {
   const username_error = !user_username
     ? "Username is required"
     : /^[A-Z][a-zA-Z\s]+$/.test(user_username)
-    ? ""
-    : "Username must start with a capital letter and contain only letters";
+      ? ""
+      : "Username must start with a capital letter and contain only letters";
   const usermail_error = !user_mail
     ? "Email is required"
     : /^\S+@\S+\.\S+$/.test(user_mail)
-    ? ""
-    : "Invalid email format";
+      ? ""
+      : "Invalid email format";
   const image_error = req.file
     ? allowedFormats.includes(req.file.mimetype) &&
       req.file.size <= 5 * 1024 * 1024
@@ -313,13 +313,13 @@ async function ValidateRegister(req, res, next) {
   const pass_error = !user_pass
     ? "Password is required"
     : /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*_-])/.test(user_pass)
-    ? ""
-    : "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character";
+      ? ""
+      : "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character";
   const conf_pass_error = !conf_user_pass
     ? "Confirm Password is required"
     : user_pass === conf_user_pass
-    ? ""
-    : "Passwords do not match";
+      ? ""
+      : "Passwords do not match";
 
   const add_error =
     !user_add || user_add.trim() === "" ? "Address is required" : "";
@@ -327,14 +327,14 @@ async function ValidateRegister(req, res, next) {
   const contact_error = !user_contact
     ? "Contact is required"
     : /^(\+91)?[6-9]\d{9}$/.test(user_contact)
-    ? ""
-    : "Invalid Contact number";
+      ? ""
+      : "Invalid Contact number";
 
   const captcha_error = !enteredCaptcha
     ? "Captcha is required"
     : enteredCaptcha !== storedCaptcha
-    ? "Invalid Captcha"
-    : "";
+      ? "Invalid Captcha"
+      : "";
 
   if (
     captcha_error ||
@@ -580,8 +580,8 @@ async function LoginCredentials(req, res) {
     captcha: !enteredCaptcha
       ? "Captcha is required"
       : enteredCaptcha !== storedCaptcha
-      ? "Invalid Captcha"
-      : "",
+        ? "Invalid Captcha"
+        : "",
   };
 
   if (errors.email || errors.password || errors.captcha) {
@@ -728,8 +728,34 @@ async function Logout(req, res) {
 async function ProfilePage(req, res) {
   const isLoggedIn = req.session.isLoggedIn;
   const username = req.session.username;
-  res.render("user/myprofile", { isLoggedIn, username });
+  const userId = req.session.userId;
+  if (!userId) {
+    return res.redirect("/");
+  }
+  const totalAmountResult = await services.CalculateTotalAmount(userId);
+  const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+  const totalAmount = totalAmountResult.totalAmount;
+  const totalQuantity = totalQuantityResult.totalQuantity;
+  const profileImage = await services.fetchProfileImage(userId);
+  const pendingOrders = await services.getPendingOrders(userId);
+const pendingOrdersCount= pendingOrders.pendingOrdersCount;
+console.log("pending===", pendingOrdersCount)
+  const userProfileImage = profileImage.Image[0].user_image;
+  res.render("user/myprofile", { isLoggedIn, username, totalAmount, totalQuantity, userProfileImage, pendingOrdersCount });
 }
+
+async function getPendingOrders(req, res) {
+  try {
+    const userId = req.session.userId;
+    const { success, pendingOrdersCount } = await services.getPendingOrders(userId);
+
+    res.json({ success, pendingOrdersCount });
+  } catch (error) {
+    console.error('Error fetching pending orders:', error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+}
+
 
 async function AddToCart(req, res) {
   const productId = req.query.product_id;
@@ -861,4 +887,5 @@ module.exports = {
   AddToCart,
   updateQuantity,
   removeItem,
+  getPendingOrders
 };
