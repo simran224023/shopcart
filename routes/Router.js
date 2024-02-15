@@ -1,35 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
-const storage = multer.memoryStorage(); 
-const upload = multer({ storage: storage });
-const controller = require("../controller/controllerfunctions");
+const otherController = require("../controller/otherController");
+const userController = require("../controller/userController");
+const userRoutes = require("../routes/userRoutes");
 
-router.get("/", controller.IndexPage);
-router.get("/getCategory/:id", controller.ProductPage);
-router.get("/viewmore/:id", controller.ViewMore);
-router.get("/search", controller.SearchPage);
-router.get("/contactUs", controller.ContactPage);
-router.get("/cart", controller.CartPage);
-router.get("/register", controller.RegisterPage);
-router.get("/refresh-captcha", controller.RefreshCaptcha);
-router.post(
-  "/register",
-  upload.single("user_image"),
-  controller.ValidateRegister
-);
-router.get("/register/verify", controller.VerifyOTPPage);
-router.post("/register/verify", controller.Verification);
-router.get("/register/resendOTP", controller.ResendOTP);
-router.get("/register/email", controller.EmailIntegration);
-router.get("/login", controller.LoginPage);
-router.post("/login", controller.LoginCredentials);
-router.get("/login/forgot-password",controller.ForgotPasswordPage)
-router.post("/login/forgot-password",controller.SendResetPasswordMail)
-router.get("/logout",controller.Logout);
-router.get("/account",controller.verifyToken,controller.ProfilePage)
-router.get("/addToCart",controller.AddToCart)
-router.post('/updateQuantity', controller.updateQuantity);
-router.post('/removeItem', controller.removeItem);
-router.post('/getPendingOrders', controller.verifyToken, controller.getPendingOrders);
+router.use("/", userRoutes);
+router.get("/", otherController.IndexPage);
+router.get("/getCategory/:id", otherController.ProductPage);
+router.get("/viewmore/:id", otherController.ViewMore);
+router.get("/search", otherController.SearchPage);
+router.get("/contactUs", otherController.ContactPage);
+router.get("/cart", otherController.CartPage);
+router.get("/account", userController.verifyToken, otherController.ProfilePage);
+router.get("/addToCart", userController.verifyToken, otherController.AddToCart);
+router.post('/updateQuantity', userController.verifyToken, otherController.updateQuantity);
+router.post('/removeItem', userController.verifyToken, otherController.removeItem);
+router.post('/getPendingOrders', userController.verifyToken, otherController.getPendingOrders);
+
 module.exports = router;

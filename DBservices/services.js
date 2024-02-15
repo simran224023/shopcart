@@ -1,4 +1,15 @@
 const conn = require("../Includes/connection");
+
+async function getUserInfo(payload) {
+  const sqlCategory = "SELECT * FROM user_table where user_id=?";
+
+  return new Promise((resolve, reject) => {
+    conn.query(sqlCategory, [payload.userId], (err, result) => {
+      if (err) reject(err);
+      else resolve(result);
+    });
+  });
+}
 async function getCategories() {
   const sqlCategory = "SELECT * FROM categories";
 
@@ -255,25 +266,41 @@ async function fetchProfileImage(user_id) {
 }
 
 async function getPendingOrders(user_id) {
-    return new Promise((resolve, reject) => {
-        const sql = `SELECT count(*) as count
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT count(*) as count
         FROM orders_pending
         WHERE user_id = ? and order_status='pending'`;
-        conn.query(sql, [user_id], (err, rows) => {
-            if (err) {
-                console.error("Error Fetching data:", err);
-                reject({ success: false, message: "Internal Server Error" });
-            } else {
-                const pendingOrdersCount = rows[0].count;
-console.log("pendingOrdersCount===", pendingOrdersCount);
-console.log("Rows=====", rows);
-                resolve({ success: true, pendingOrdersCount });
-            }
-        });
+    conn.query(sql, [user_id], (err, rows) => {
+      if (err) {
+        console.error("Error Fetching data:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        const pendingOrdersCount = rows[0].count;
+        console.log("pendingOrdersCount===", pendingOrdersCount);
+        console.log("Rows=====", rows);
+        resolve({ success: true, pendingOrdersCount });
+      }
     });
+  });
+}
+
+async function updateQuantityInCart(userId, productId, newQuantity) {
+  return conn.query(
+    "UPDATE cart_details SET quantity = ? WHERE product_id = ? AND user_id = ?",
+    [newQuantity, productId, userId]
+  );
+}
+
+async function removeItemInCart(userId, productId) {
+  return conn.query(
+      "DELETE FROM cart_details WHERE product_id = ? AND user_id = ?",
+      [productId, userId]
+    );
+
 }
 
 module.exports = {
+  getUserInfo,
   getCategories,
   getAllProducts,
   getProductsByProductId,
@@ -287,5 +314,7 @@ module.exports = {
   CalculateTotalQuantity,
   FetchCartItems,
   fetchProfileImage,
-  getPendingOrders
+  getPendingOrders,
+updateQuantityInCart,
+removeItemInCart
 };
