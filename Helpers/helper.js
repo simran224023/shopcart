@@ -23,6 +23,7 @@ async function validation(payload) {
   const storedCaptcha = payload.storedCaptcha;
   const allowedFormats = payload.allowedFormats;
   const userImage = payload.userImage;
+
   const username_error = !user_username
     ? "Username is required"
     : /^[A-Z][a-zA-Z\s]+$/.test(user_username)
@@ -188,6 +189,48 @@ async function recalculateTotals(userId) {
     totalQuantity: totalQuantityResult.totalQuantity,
   };
 }
+
+async function updateValidate(payload) {
+  const allowedFormats = ["image/png", "image/jpeg"];
+  const user_username = payload.user_name;
+  const user_mail = payload.user_email;
+  const user_add = payload.user_address;
+  const user_contact = payload.user_mobile;
+  const userImage = payload.user_image;
+  let image_error;
+  const username_error = !user_username
+    ? "Username is required"
+    : /^[A-Z][a-zA-Z\s]+$/.test(user_username)
+    ? ""
+    : "Username must start with a capital letter and contain only letters";
+  const usermail_error = !user_mail
+    ? "Email is required"
+    : /^\S+@\S+\.\S+$/.test(user_mail)
+    ? ""
+    : "Invalid email format";
+  if (userImage) {
+    image_error =
+      allowedFormats.includes(userImage.mimetype) &&
+      userImage.size <= 5 * 1024 * 1024
+        ? ""
+        : "Invalid image format or size (max 5MB, PNG or JPEG only)";
+  } else image_error = "";
+  const add_error =
+    !user_add || user_add.trim() === "" ? "Address is required" : "";
+
+  const contact_error = !user_contact
+    ? "Contact is required"
+    : /^(\+91)?[6-9]\d{9}$/.test(user_contact)
+    ? ""
+    : "Invalid Contact number";
+  return {
+    username_error,
+    usermail_error,
+    image_error,
+    add_error,
+    contact_error,
+  };
+}
 module.exports = {
   generateCaptcha,
   validation,
@@ -196,4 +239,5 @@ module.exports = {
   EmailIntegration,
   validateLoginCredentials,
   recalculateTotals,
+  updateValidate,
 };

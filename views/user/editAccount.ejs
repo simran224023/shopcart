@@ -1,0 +1,39 @@
+<h3 class="text-center text-success mt-5 mb-3">Edit Account</h3>
+<form method="post" enctype="multipart/form-data" class="py-3 px-3 m-auto w-50 mb-5"
+    style="background-color:#eee;border-radius:15px;" id="yourFormId">
+    <div class="form-outline mb-3">
+        <label for="user_username" class="form-label mb-0 fw-bold">Name</label>
+        <input type="text" class="form-control m-auto" name="user_username" value="<%= editAccount.user_name %>">
+        <span class="text-danger fw-bold text-danger-username" style="font-size:10px;">
+        </span>
+    </div>
+    <div class="form-outline mb-3">
+        <label for="user_email" class="form-label mb-0 fw-bold">Email</label>
+        <input type="email" class="form-control m-auto" name="user_email" value="<%= editAccount.user_email %>">
+        <span class="text-danger fw-bold text-danger-usermail" style="font-size:10px;">
+        </span>
+    </div>
+    <div class="form-outline mb-3">
+        <label for="user_image" class="form-label mb-0 fw-bold">Image</label>
+        <div class="d-flex">
+            <input type="file" class="form-control m-auto" name="user_image">
+            <img src="uploads/<%= editAccount.user_image %>" alt="" width="70px" height="70px"
+                style="object-fit:contain;">
+        </div>
+        <span class="text-danger fw-bold text-danger-image" style="font-size:10px;">
+        </span>
+    </div>
+    <div class="form-outline mb-3">
+        <label for="user_address" class="form-label mb-0 fw-bold">Address</label>
+        <input type="text" class="form-control m-auto" name="user_address" value="<%= editAccount.user_address  %>">
+        <span class="text-danger fw-bold text-danger-add" style="font-size:10px;">
+        </span>
+    </div>
+    <div class="form-outline mb-3">
+        <label for="user_mobile" class="form-label mb-0 fw-bold">Mobile</label>
+        <input type="text" class="form-control m-auto" name="user_mobile" value="<%= editAccount.user_mobile  %>">
+        <span class="text-danger fw-bold text-danger-contact" style="font-size:10px;">
+        </span>
+    </div>
+    <input type="submit" class="bg-info py-2 px-3 border-0" name="user_update" value="Update">
+</form>

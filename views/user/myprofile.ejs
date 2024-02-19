@@ -21,6 +21,13 @@
     <!-- CSS File -->
     <link href="../style.css" rel="stylesheet">
     </link>
+
+    <!-- Bootstrap JS Link -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
     <style>
         body {
             padding-top: 76px;
@@ -128,13 +135,14 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link text-light m-0" href="" onclick="fetchPendingOrders()">Pending Orders</a>
+                        <a class="nav-link text-light m-0" href="" onclick="fetchPendingOrders(event)">Pending
+                            Orders</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-light m-0 " href="">Edit Account</a>
+                        <a class="nav-link text-light m-0 " href="" onclick="fetchEditAccount(event)">Edit Account</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-light m-0 " href="">My Orders</a>
+                        <a class="nav-link text-light m-0 " href="" onclick="fetchUserOrders(event)">My Orders</a>
                     </li>
                     <li class="nav-item pb-5">
                         <a class="nav-link text-light m-0" href="/logout">Logout</a>
@@ -142,17 +150,10 @@
                 </ul>
             </div>
             <div class="col-md-10" id="profileSetting">
-                <% if (pendingOrdersCount> 0) { %>
-                    <h3 class='text-center mt-5 mb-2 fs-1 text-success'>
-                        You have <span class='text-danger'>
-                            <%= pendingOrdersCount %>
-                        </span> Pending Orders.
-                    </h3>
-                    <p class='text-center'><a href='#' class='text-dark'>Order Details</a></p>
-                    <% } else { %>
-                        <h3 class='text-center mt-5 mb-2 fs-1 text-success'>You have Zero Pending Orders.</h3>
-                        <p class='text-center'><a href='/' class='text-dark'>Explore Products</a></p>
+                <% if (pendingOrdersCount==0 || pendingOrdersCount) { %>
+                    <%- include('../user/includes/pendingOrdersCount.ejs',{pendingOrdersCount:pendingOrdersCount}) %>
                         <% } %>
+
             </div>
 
         </div>
@@ -161,29 +162,24 @@
         <p class="mb-0">All Rights Reserved &copy; - Designed by Simran Saini - 2024</p>
     </footer>
 
-
-
-    <!-- Bootstrap JS Link -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script>
-        function fetchPendingOrders() {
+        function fetchPendingOrders(event) {
+            event.preventDefault();
             fetch('/getPendingOrders', {
                 method: 'POST', // Specify the method as POST
             })
                 .then(response => response.json())
                 .then(data => {
                     const pendingOrdersCount = data.pendingOrdersCount;
-
+                    console.log("data.pendingOrdersCount", data.pendingOrdersCounts)
                     const pendingOrdersContent = document.getElementById('profileSetting');
                     if (pendingOrdersCount > 0) {
                         const countContent = `<h3 class='text-center mt-5 mb-2 fs-1 text-success'>You have <span class='text-danger'>${pendingOrdersCount}</span> Pending Orders.</h3>
-                            <p class='text-center'><a href='#' class='text-dark'>Order Details</a></p>`;
+                        <p class='text-center'><a href="#" onclick="fetchUserOrders(event)" class='text-dark'>Order Details</a></p>`;
                         pendingOrdersContent.innerHTML = countContent;
                     } else {
                         const exploreProductsLink = `<h3 class='text-center mt-5 mb-2 fs-1 text-success'>You have Zero Pending Orders.</h3>
-                            <p class='text-center'><a href='/' class='text-dark'>Explore Products</a></p>`;
+                        <p class='text-center'><a href='/' class='text-dark'>Explore Products</a></p>`;
                         pendingOrdersContent.innerHTML = exploreProductsLink;
                     }
                 })
@@ -191,7 +187,184 @@
                     console.error('Error fetching pending orders:', error);
                 });
         }
+
+        function fetchUserOrders(event) {
+            event.preventDefault();
+            fetch('/myOrders', {
+                method: 'POST', // Specify the method as POST
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const profileSetting = document.getElementById('profileSetting');
+                    if (data.success && data.user_orders.length) {
+                        const ordersTableHTML = `
+                    <h3 class="text-center text-success mt-5">All My Orders</h3>
+                    <table class="table table-bordered mt-3">
+                        <thead class="bg-info text-center">
+                            <tr>
+                                <th>Sr No.</th>
+                                <th>Amount</th>
+                                <th>Total Products</th>
+                                <th>Invoice Number</th>
+                                <th>Date</th>
+                                <th>Complete/Incomplete</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-secondary text-light text-center">
+                            ${data.user_orders.map((order, index) => `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${order.amount_due}</td>
+                                    <td>${order.total_products}</td>
+                                    <td>${order.invoice_number}</td>
+                                    <td>${order.order_date}</td>
+                                    <td>${order.order_status === 'pending' ? 'Incomplete' : 'Complete'}</td>
+                                    ${order.order_status === 'complete' ? '<td>Paid</td>' : `
+                                    <td>
+                                        <a href='' class='text-light me-3'>Confirm</a>
+                                        <a href='#' class='text-light' onclick='chkdel(event, ${order.order_id})'>Cancel</a>
+                                    </td>`}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>`;
+
+                        profileSetting.innerHTML = ordersTableHTML;
+                    } else {
+                        profileSetting.innerHTML = '<h3 class="text-center text-danger fs-1 mt-5">No orders yet</h3>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching user orders:', error);
+                });
+        }
+
+        async function chkdel(event, orderId) {
+            event.preventDefault();
+            if (confirm("Are you sure you want to cancel this order?")) {
+                try {
+                    const response = await fetch(`/cancel-order/${orderId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (response.ok) {
+                        console.log('Order canceled successfully.');
+                        await fetchUserOrders(event);
+                        console.log('FetchUserOrders completed.');
+                    } else {
+                        console.error('Failed to cancel order:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('Error in the fetch request:', error);
+                }
+            }
+        }
+
+
+        async function fetchEditAccount(event) {
+            event.preventDefault();
+
+            // Fetch the edit account form
+            try {
+                const response = await fetch('/editAccount', {
+                    method: 'GET',
+                });
+
+                if (response.ok) {
+                    const data = await response.text();
+                    $('#profileSetting').html(data);
+
+                    $('#profileSetting form').on('submit', async function (event) {
+                        event.preventDefault();
+
+                        const formData = new FormData(document.getElementById('yourFormId'));
+                        console.log([...formData.entries()]);
+
+                        try {
+                            const updateResponse = await fetch('/account/updateAccount', {
+                                method: 'POST',
+                                body: formData,
+                            });
+
+                            if (updateResponse.ok) {
+                                const data = await updateResponse.json();
+                                console.log(data);
+
+                                const usernameErrorSpan = $('#yourFormId').find('.text-danger-username');
+                                const usermailErrorSpan = $('#yourFormId').find('.text-danger-usermail');
+                                const imageErrorSpan = $('#yourFormId').find('.text-danger-image');
+                                const addErrorSpan = $('#yourFormId').find('.text-danger-add');
+                                const contactErrorSpan = $('#yourFormId').find('.text-danger-contact');
+
+                                usernameErrorSpan.html('');
+                                usermailErrorSpan.html('');
+                                imageErrorSpan.html('');
+                                addErrorSpan.html('');
+                                contactErrorSpan.html('');
+                                if (Object.values(data.validate).every(value => value === '')) {
+                                    await updateFormDataInDatabase(formData)
+                                }
+                                else {
+                                    usernameErrorSpan.html(data.validate.username_error || '');
+                                    usermailErrorSpan.html(data.validate.usermail_error || '');
+                                    imageErrorSpan.html(data.validate.image_error || '');
+                                    addErrorSpan.html(data.validate.add_error || '');
+                                    contactErrorSpan.html(data.validate.contact_error || '');
+                                }
+
+
+                            } else {
+                                console.error('Error updating account:', updateResponse.statusText);
+                            }
+                        } catch (error) {
+                            console.log('Error updating account:', error);
+
+                        }
+                    });
+                } else {
+                    console.error('Error fetching Edit Account content:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching Edit Account content:', error);
+            }
+        }
+
+        async function updateFormDataInDatabase(formData) {
+            fetch('/account/updateFormDataInDatabase', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("data======", data);
+
+                    if (data.success) {
+                        alert("Updated Successfully")
+                        setTimeout(() => {
+                            window.location.reload()
+                        }, 1000);
+                    } else {
+                        console.log("error")
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating form data in the database:', error);
+                });
+        }
+
+
     </script>
+
+
+    <!-- Bootstrap JS Link -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 </body>
 

@@ -1,0 +1,11 @@
+<% if (pendingOrdersCount> 0) { %>
+    <h3 class='text-center mt-5 mb-2 fs-1 text-success'>
+        You have <span class='text-danger'>
+            <%= pendingOrdersCount %>
+        </span> Pending Orders.
+    </h3>
+    <p class='text-center'><a href='#' onclick="fetchUserOrders(event)" class='text-dark'>Order Details</a></p>
+    <% } else { %>
+        <h3 class='text-center mt-5 mb-2 fs-1 text-success'>You have Zero Pending Orders.</h3>
+        <p class='text-center'><a href='/' class='text-dark'>Explore Products</a></p>
+        <% } %>

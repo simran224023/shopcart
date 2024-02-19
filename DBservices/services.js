@@ -268,7 +268,7 @@ async function fetchProfileImage(user_id) {
 async function getPendingOrders(user_id) {
   return new Promise((resolve, reject) => {
     const sql = `SELECT count(*) as count
-        FROM orders_pending
+        FROM user_orders
         WHERE user_id = ? and order_status='pending'`;
     conn.query(sql, [user_id], (err, rows) => {
       if (err) {
@@ -276,8 +276,6 @@ async function getPendingOrders(user_id) {
         reject({ success: false, message: "Internal Server Error" });
       } else {
         const pendingOrdersCount = rows[0].count;
-        console.log("pendingOrdersCount===", pendingOrdersCount);
-        console.log("Rows=====", rows);
         resolve({ success: true, pendingOrdersCount });
       }
     });
@@ -293,11 +291,113 @@ async function updateQuantityInCart(userId, productId, newQuantity) {
 
 async function removeItemInCart(userId, productId) {
   return conn.query(
-      "DELETE FROM cart_details WHERE product_id = ? AND user_id = ?",
-      [productId, userId]
-    );
-
+    "DELETE FROM cart_details WHERE product_id = ? AND user_id = ?",
+    [productId, userId]
+  );
 }
+
+async function getUserOrders(user_id) {
+  return new Promise((resolve, reject) => {
+    const sql = `Select * from user_orders where user_id=? order by order_id desc`;
+    conn.query(sql, [user_id], (err, rows) => {
+      if (err) {
+        console.error("Error Fetching data:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, user_orders: rows });
+      }
+    });
+  });
+}
+
+async function cancelUserOrders(order_id) {
+  return new Promise((resolve, reject) => {
+    const sql = `delete  from user_orders where order_id=?`;
+    conn.query(sql, [order_id], (err, rows) => {
+      if (err) {
+        console.error("Error Canceling data:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, cancel_user_orders: rows });
+      }
+    });
+  });
+}
+
+async function updateFormData(formData, userId) {
+  return new Promise((resolve, reject) => {
+    let sql, params;
+
+    if (formData.user_image) {
+      sql = `UPDATE user_table SET user_name=?, user_address=?, user_email=?, user_mobile=?, user_image=? WHERE user_id=?`;
+      params = [
+        formData.user_username,
+        formData.user_address,
+        formData.user_email,
+        formData.user_mobile,
+        formData.user_image,
+        userId,
+      ];
+    } else {
+      sql = `UPDATE user_table SET user_name=?, user_address=?, user_email=?, user_mobile=? WHERE user_id=?`;
+      params = [
+        formData.user_username,
+        formData.user_address,
+        formData.user_email,
+        formData.user_mobile,
+        userId,
+      ];
+    }
+
+    conn.query(sql, params, (err, rows) => {
+      if (err) {
+        console.error("Error updating data:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, updateFormData: rows });
+      }
+    });
+  });
+}
+// async function updateFormData(
+//   userId,
+//   user_name,
+//   user_email,
+//   user_image,
+//   user_address,
+//   user_mobile
+// ) {
+//   return new Promise((resolve, reject) => {
+//     let sql, params;
+
+//     if (user_image) {
+//       // Assuming user_image is a file object, extract necessary information
+//       const { filename, buffer } = user_image;
+
+//       sql = `UPDATE user_table SET user_name=?, user_address=?, user_email=?, user_mobile=?, user_image=? WHERE user_id=?`;
+//       params = [
+//         user_name,
+//         user_address,
+//         user_email,
+//         user_mobile,
+//         buffer,
+//         userId,
+//       ];
+//     } else {
+//       sql = `UPDATE user_table SET user_name=?, user_address=?, user_email=?, user_image=? WHERE user_id=?`;
+//       params = [user_name, user_address, user_email, userId];
+//     }
+
+//     conn.query(sql, params, (err, rows) => {
+//       if (err) {
+//         console.error("Error updating data:", err);
+//         reject({ success: false, message: "Internal Server Error" });
+//       } else {
+//         resolve({ success: true });
+//       }
+//     });
+//   });
+// }
 
 module.exports = {
   getUserInfo,
@@ -315,6 +415,9 @@ module.exports = {
   FetchCartItems,
   fetchProfileImage,
   getPendingOrders,
-updateQuantityInCart,
-removeItemInCart
+  updateQuantityInCart,
+  removeItemInCart,
+  getUserOrders,
+  cancelUserOrders,
+  updateFormData,
 };
