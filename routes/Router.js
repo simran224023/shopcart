@@ -7,6 +7,7 @@ const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+
 router.use("/", userRoutes);
 router.get("/", otherController.IndexPage);
 router.get("/getCategory/:id", otherController.ProductPage);
@@ -44,13 +45,20 @@ router.get(
 );
 router.post(
   "/account/updateAccount",
+  userController.verifyToken,
   upload.single("user_image"),
   otherController.updateAccount
 );
 router.post(
   "/account/updateFormDataInDatabase",
+  userController.verifyToken,
   upload.single("user_image"),
   otherController.updateFormDataInDatabase
 );
+
+router.get("/checkout", userController.verifyToken, otherController.checkout);
+router.post("/pay_now", userController.verifyToken, otherController.paymentNow);
+router.post("/capture_payment",userController.verifyToken, otherController.capturePayment)
+
 
 module.exports = router;

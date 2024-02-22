@@ -359,47 +359,158 @@ async function updateFormData(formData, userId) {
     });
   });
 }
-// async function updateFormData(
-//   userId,
-//   user_name,
-//   user_email,
-//   user_image,
-//   user_address,
-//   user_mobile
-// ) {
-//   return new Promise((resolve, reject) => {
-//     let sql, params;
+async function getCheckoutData(userId) {
+  try {
+    const status = "pending";
+    const invoice_number = Math.floor(Math.random() * 1000000);
+    const total_price = await CalculateTotalAmount(userId);
+    const count_products = await CalculateTotalQuantity(userId);
+    return {
+      success: true,
+      message: "Checkout successful",
+      total_price: total_price.totalAmount,
+      invoice_number,
+      status,
+      count_products: count_products.totalQuantity,
+    };
+  } catch (error) {
+    console.error("Checkout error:", error);
+    return {
+      success: false,
+      message: "An error occurred during checkout",
+    };
+  }
+}
 
-//     if (user_image) {
-//       // Assuming user_image is a file object, extract necessary information
-//       const { filename, buffer } = user_image;
+async function getCartDetails(userId) {
+  return new Promise((resolve, reject) => {
+    const sql = `select * from cart_details where user_id=?`;
+    conn.query(sql, [userId], (err, rows) => {
+      if (err) {
+        console.error("Error fetching data:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, cartDetails: rows });
+      }
+    });
+  });
+}
 
-//       sql = `UPDATE user_table SET user_name=?, user_address=?, user_email=?, user_mobile=?, user_image=? WHERE user_id=?`;
-//       params = [
-//         user_name,
-//         user_address,
-//         user_email,
-//         user_mobile,
-//         buffer,
-//         userId,
-//       ];
-//     } else {
-//       sql = `UPDATE user_table SET user_name=?, user_address=?, user_email=?, user_image=? WHERE user_id=?`;
-//       params = [user_name, user_address, user_email, userId];
-//     }
+async function insertOrderPending(userId, invoice, product_id, status, quantity) {
+  return new Promise((resolve, reject) => {
+    const sql = `insert into orders_pending(user_id,invoice_number,product_id,order_status, quantity) values(?,?,?,?,?)`;
+    conn.query(sql, [userId, invoice, product_id, status, quantity], (err, rows) => {
+      if (err) {
+        console.error("Error fetching data:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, insertOrderPending: rows });
+      }
+    });
+  });
+}
 
-//     conn.query(sql, params, (err, rows) => {
-//       if (err) {
-//         console.error("Error updating data:", err);
-//         reject({ success: false, message: "Internal Server Error" });
-//       } else {
-//         resolve({ success: true });
-//       }
-//     });
-//   });
-// }
+async function insertUserOrder(userId, amount, invoice, products, status) {
+  return new Promise((resolve, reject) => {
+    const sql = `INSERT INTO user_orders(user_id, amount_due, invoice_number, total_products, order_date, order_status) VALUES (?, ?, ?, ?, NOW(), ?)`;
+    conn.query(
+      sql,
+      [userId, amount, invoice, products, status],
+      (err, result) => {
+        if (err) {
+          console.error("Error inserting into user_orders:", err);
+          reject({ success: false, message: "Internal Server Error" });
+        } else {
+          resolve({ success: true, insertUserOrder: result });
+        }
+      }
+    );
+  });
+}
+
+async function getUserOrdersDetails(invoice) {
+  return new Promise((resolve, reject) => {
+    const sql = `select * from user_orders where invoice_number=?`;
+    conn.query(sql, [invoice], (err, rows) => {
+      if (err) {
+        console.error("Error fetching data:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, getUserOrdersDetails: rows });
+      }
+    });
+  });
+}
+async function updateUserOrders(order_id) {
+  return new Promise((resolve, reject) => {
+    const sql = `UPDATE user_orders SET order_status='Complete' WHERE order_id=?`;
+    conn.query(sql, [order_id], (err, result) => {
+      if (err) {
+        console.error("Error updating user_orders:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, updateUserOrders: result });
+      }
+    });
+  });
+}
+
+async function selectUserOrders(order_id) {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT * FROM user_orders WHERE order_id=?`;
+    conn.query(sql, [order_id], (err, rows) => {
+      if (err) {
+        console.error("Error selecting user_orders:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, userOrders: rows[0] });
+      }
+    });
+  });
+}
+
+async function insertUserPayments(
+  user_id,
+  order_id,
+  invoice,
+  amount,
+  payment_mode
+) {
+  return new Promise((resolve, reject) => {
+    const sql = `INSERT INTO user_payments(user_id, order_id, invoice_number, amount, payment_mode, date) VALUES (?, ?, ?, ?, ?, NOW())`;
+    conn.query(
+      sql,
+      [user_id, order_id, invoice, amount, payment_mode],
+      (err, result) => {
+        if (err) {
+          console.error("Error inserting into user_payments:", err);
+          reject({ success: false, message: "Internal Server Error" });
+        } else {
+          resolve({ success: true, insertUserPayments: result });
+        }
+      }
+    );
+  });
+}
+
+async function deleteCartDetails(user_id) {
+  return new Promise((resolve, reject) => {
+    const sql = `DELETE FROM cart_details WHERE user_id=?`;
+    conn.query(sql, [user_id], (err, result) => {
+      if (err) {
+        console.error("Error deleting cart_details:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, deleteCartDetails: result });
+      }
+    });
+  });
+}
 
 module.exports = {
+  deleteCartDetails,
+  insertUserPayments,
+  selectUserOrders,
   getUserInfo,
   getCategories,
   getAllProducts,
@@ -420,4 +531,10 @@ module.exports = {
   getUserOrders,
   cancelUserOrders,
   updateFormData,
+  getCheckoutData,
+  getCartDetails,
+  insertOrderPending,
+  insertUserOrder,
+  getUserOrdersDetails,
+  updateUserOrders,
 };

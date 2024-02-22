@@ -1,6 +1,11 @@
 const services = require("../DBservices/services");
 const helper = require("../Helpers/helper");
 const fs = require("fs");
+const Razorpay = require("razorpay");
+const razorpay = new Razorpay({
+  key_id: "rzp_test_vYw0QMxTGojoMY",
+  key_secret: "hkIVd7CkGLT4tpoRTBr1H2GE",
+});
 async function IndexPage(req, res) {
   try {
     let isLoggedIn;
@@ -416,7 +421,6 @@ async function editAccountPage(req, res) {
 }
 
 async function updateAccount(req, res) {
-
   try {
     const userId = req.cookies.userId;
     const [userInfo] = await services.getUserInfo({ userId });
@@ -475,6 +479,123 @@ async function updateFormDataInDatabase(req, res) {
       .json({ success: false, message: "Internal Server Error" });
   }
 }
+
+async function checkout(req, res) {
+  try {
+    const userId = req.cookies.userId;
+    const [getUserInfo] = await services.getUserInfo({ userId });
+    const getCheckoutData = await services.getCheckoutData(userId);
+    if (getCheckoutData.success) {
+      res.render("user/checkoutMain", {
+        getCheckoutData,
+        name: getUserInfo.user_name,
+      });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+}
+
+async function paymentNow(req, res) {
+  const userId = req.cookies.userId;
+  const { name, amount, invoice, total_products } = req.body;
+  const actualAmount = amount * 100;
+
+  const options = {
+    amount: actualAmount,
+    currency: "INR",
+    receipt: invoice,
+    payment_capture: 1,
+  };
+
+  try {
+    const order = await razorpay.orders.create(options);
+    if (order.id) {
+      const status = "pending";
+      const cartDetails = await services.getCartDetails(userId);
+      if (cartDetails.cartDetails.length > 0) {
+        for (const rowPrice of cartDetails.cartDetails) {
+          const productId = rowPrice.product_id;
+          const quantity = rowPrice.quantity;
+          const insertOrderPending = await services.insertOrderPending(
+            userId,
+            invoice,
+            productId,
+            status,
+            quantity
+          );
+        }
+      }
+      const insertUserOrder = await services.insertUserOrder(
+        userId,
+        amount,
+        invoice,
+        total_products,
+        status
+      );
+      const getUserOrdersDetails = await services.getUserOrdersDetails(invoice);
+      const orderId = getUserOrdersDetails.getUserOrdersDetails[0].order_id;
+      req.session.orderId = orderId;
+      const deleteCartResult = await services.deleteCartDetails(userId);
+    }
+    res.json({
+      success: true,
+      orderId: order.id,
+      amount: actualAmount,
+      currency: "INR",
+      name: name,
+      totalProducts: total_products,
+      invoice: invoice,
+    });
+  } catch (error) {
+    console.error("Razorpay order creation error:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error creating Razorpay order" });
+  }
+}
+
+async function capturePayment(req, res) {
+  const { payment_id } = req.body;
+
+  try {
+    if (payment_id) {
+      const order_id = req.session.orderId;
+      const updateOrderResult = await services.updateUserOrders(order_id);
+
+      if (updateOrderResult.success) {
+        const selectOrderResult = await services.selectUserOrders(order_id);
+        const userOrder = selectOrderResult.userOrders;
+        const statusForm = userOrder.order_status;
+        const invoice = userOrder.invoice_number;
+        const userId = userOrder.user_id;
+        const amount = userOrder.amount_due;
+
+        if (statusForm === "Complete") {
+          const paymentMode = "Razorpay";
+          const insertPaymentResult = await services.insertUserPayments(
+            userId,
+            order_id,
+            invoice,
+            amount,
+            paymentMode
+          );
+        }
+      }
+      res.json({ success: true });
+    } else {
+      res.json({ success: false, message: "Payment capture failed" });
+    }
+  } catch (error) {
+    console.error("Razorpay payment capture error:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error capturing payment" });
+  }
+}
+
 module.exports = {
   IndexPage,
   ProductPage,
@@ -492,4 +613,7 @@ module.exports = {
   editAccountPage,
   updateAccount,
   updateFormDataInDatabase,
+  checkout,
+  paymentNow,
+  capturePayment,
 };

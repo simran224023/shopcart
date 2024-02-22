@@ -220,7 +220,7 @@
                                     <td>${order.invoice_number}</td>
                                     <td>${order.order_date}</td>
                                     <td>${order.order_status === 'pending' ? 'Incomplete' : 'Complete'}</td>
-                                    ${order.order_status === 'complete' ? '<td>Paid</td>' : `
+                                    ${order.order_status === 'Complete' ? '<td>Paid</td>' : `
                                     <td>
                                         <a href='' class='text-light me-3'>Confirm</a>
                                         <a href='#' class='text-light' onclick='chkdel(event, ${order.order_id})'>Cancel</a>
