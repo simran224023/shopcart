@@ -231,6 +231,63 @@ async function updateValidate(payload) {
     contact_error,
   };
 }
+
+async function sendForgotPasswordMail(user_email, user_id) {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "saini.simran3102@gmail.com",
+        pass: "fzvjhntiuhkujbxc",
+      },
+    });
+
+    const mailOptions = {
+      from: "saini.simran3102@gmail.com",
+      to: user_email,
+      subject: "Shopcart Reset Password",
+      html: `<p style="font-size:20px">Click the following link to reset your Shopcart password:</p>
+           <a href="http://localhost:3009/login/reset-password?userId=${user_id}">Reset Password</a>`,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent:", info.response);
+    return { ok: true, message: "Email sent successfully." };
+  } catch (error) {
+    console.error("Error sending email:", error);
+    return {
+      ok: false,
+      message: "Error sending email. Please try again later.",
+    };
+  }
+}
+
+async function validatePassword(password, confirmPassword) {
+  const pass_error = !password
+    ? "Password is required"
+    : /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*_-])/.test(password)
+    ? ""
+    : "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character";
+  const conf_pass_error = !confirmPassword
+    ? "Confirm Password is required"
+    : password === confirmPassword
+    ? ""
+    : "Passwords do not match";
+
+  return {
+    pass_error,
+    conf_pass_error,
+  };
+}
+
+async function updatePassword(password, userId) {
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const updatePassword = await services.updatePassword(hashedPassword,userId);
+console.log("update=====", updatePassword)
+  if (updatePassword.success) {
+    return { success: true };
+  }
+}
 module.exports = {
   generateCaptcha,
   validation,
@@ -240,4 +297,7 @@ module.exports = {
   validateLoginCredentials,
   recalculateTotals,
   updateValidate,
+  sendForgotPasswordMail,
+  validatePassword,
+  updatePassword,
 };

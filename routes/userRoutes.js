@@ -20,6 +20,8 @@ router.get("/login", userController.loginPage);
 router.post("/login", userController.loginCredentials);
 router.get("/login/forgot-password", userController.forgotPasswordPage);
 router.post("/login/forgot-password", userController.sendResetPasswordMail);
+router.get("/login/reset-password", userController.resetPasswordPage);
+router.post("/login/reset-password", userController.updatePassword);
 router.get("/logout", userController.logout);
 router.get("/refresh-captcha", userController.refreshCaptcha);
 

@@ -313,7 +313,10 @@ async function loginCredentials(req, res) {
           expires: expirationTime,
         });
 
-        res.cookie("userId", userId, { expires: expirationTime, httpOnly: true });
+        res.cookie("userId", userId, {
+          expires: expirationTime,
+          httpOnly: true,
+        });
 
         return res.render("user/login", {
           showAlert: "true",
@@ -409,14 +412,70 @@ async function sendResetPasswordMail(req, res) {
       userEmail,
     });
   }
+  const userId = VerifyUser[0].user_id;
+  const sendForgotPasswordMail = await helper.sendForgotPasswordMail(
+    userEmail,
+    userId
+  );
+  if (sendForgotPasswordMail.ok) {
+    return res.redirect("/login/forgot-password");
+  }
+}
+
+async function resetPasswordPage(req, res) {
+  return res.render("user/resetPassword", {
+    pass_error: "",
+    conf_pass_error: "",
+    password: "",
+    confPassword: "",
+    alert: "",
+  });
+}
+
+async function updatePassword(req, res) {
+  const userId = req.query.userId;
+  const password = req.body.user_password;
+  const confPassword = req.body.conf_user_pass;
+  const validatePassword = await helper.validatePassword(
+    password,
+    confPassword
+  );
+  const pass_error = validatePassword.pass_error;
+  const conf_pass_error = validatePassword.conf_pass_error;
+  if (pass_error || conf_pass_error) {
+    return res.render("user/resetPassword", {
+      pass_error,
+      conf_pass_error,
+      password,
+      confPassword,
+      alert: "",
+    });
+  }
+  const updatePassword = await helper.updatePassword(password, userId);
+  if (updatePassword.success) {
+    return res.render("user/resetPassword", {
+      pass_error:"",
+      conf_pass_error:"",
+      password,
+      confPassword,
+      alert: "Yes",
+    });
+  } else {
+    return res.render("user/resetPassword", {
+      pass_error:"",
+      conf_pass_error:"",
+      password,
+      confPassword,
+      alert: "No",
+    });
+  }
 }
 
 async function logout(req, res) {
-    res.clearCookie("token");
-    res.clearCookie("userId");
-    res.redirect("/");
+  res.clearCookie("token");
+  res.clearCookie("userId");
+  res.redirect("/");
 }
-
 
 module.exports = {
   verifyOTPPage,
@@ -431,4 +490,6 @@ module.exports = {
   forgotPasswordPage,
   sendResetPasswordMail,
   logout,
+  resetPasswordPage,
+  updatePassword,
 };

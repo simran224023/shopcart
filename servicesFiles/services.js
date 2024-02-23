@@ -540,6 +540,20 @@ async function getConfirmOrders(order_id) {
   });
 }
 
+async function updatePassword(password, userId){
+return new Promise((resolve, reject) => {
+    const sql = "UPDATE user_table SET user_password = ? WHERE user_id = ?";
+    conn.query(sql, [password, userId], (err, result) => {
+      if (err) {
+        console.error("Error updating user password:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, updatePassword: result });
+      }
+    });
+  });
+}
+
 module.exports = {
   deleteCartDetails,
   insertUserPayments,
@@ -571,4 +585,5 @@ module.exports = {
   getUserOrdersDetails,
   updateUserOrders,
   getConfirmOrders,
+updatePassword
 };
