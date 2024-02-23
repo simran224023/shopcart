@@ -9,14 +9,14 @@ const upload = multer({ storage: storage });
 
 
 router.use("/", userRoutes);
-router.get("/", otherController.IndexPage);
-router.get("/getCategory/:id", otherController.ProductPage);
-router.get("/viewmore/:id", otherController.ViewMore);
-router.get("/search", otherController.SearchPage);
-router.get("/contactUs", otherController.ContactPage);
-router.get("/cart", otherController.CartPage);
-router.get("/account", userController.verifyToken, otherController.ProfilePage);
-router.get("/addToCart", userController.verifyToken, otherController.AddToCart);
+router.get("/", otherController.indexPage);
+router.get("/getCategory/:id", otherController.productPage);
+router.get("/viewmore/:id", otherController.viewMore);
+router.get("/search", otherController.searchPage);
+router.get("/contactUs", otherController.contactPage);
+router.get("/cart", otherController.cartPage);
+router.get("/account", userController.verifyToken, otherController.profilePage);
+router.get("/addToCart", userController.verifyToken, otherController.addToCart);
 router.post(
   "/updateQuantity",
   userController.verifyToken,
@@ -56,9 +56,16 @@ router.post(
   otherController.updateFormDataInDatabase
 );
 
-router.get("/checkout", userController.verifyToken, otherController.checkout);
-router.post("/pay_now", userController.verifyToken, otherController.paymentNow);
-router.post("/capture_payment",userController.verifyToken, otherController.capturePayment)
+router.get("/account/checkout", userController.verifyToken, otherController.checkout);
+router.post("/checkoutBegin", userController.verifyToken, otherController.checkoutBegin);
+router.post("/checkoutPaymentComplete",userController.verifyToken, otherController.checkoutPaymentComplete)
+
+router.get("/account/confirmOrders/:orderId", userController.verifyToken, otherController.confirmOrders);
+router.post("/confirmOrderBegin", userController.verifyToken, otherController.confirmOrderBegin);
+router.post("/confirmOrderComplete",userController.verifyToken, otherController.confirmOrderComplete)
+
+
+
 
 
 module.exports = router;

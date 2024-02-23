@@ -98,9 +98,10 @@
         var total_products = $("#total_products").val();
         var deliver_address = $("#delivery_address").val();
 
+
         $.ajax({
             type: 'post',
-            url: '/checkoutBegin',
+            url: '/confirmOrderBegin',
             data: { amount, name, invoice, total_products, deliver_address },
             success: function (response) {
                 var options = {
@@ -114,7 +115,7 @@
                     handler: function (response) {
                         $.ajax({
                             type: 'post',
-                            url: '/checkoutPaymentComplete',
+                            url: '/confirmOrderComplete',
                             data: { payment_id: response.razorpay_payment_id },
                             success: function (result) {
                                 if (result.success) {

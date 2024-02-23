@@ -1,12 +1,12 @@
-const services = require("../DBservices/services");
-const helper = require("../Helpers/helper");
+const services = require("../servicesFiles/services");
+const helper = require("../helperFiles/helper");
 const fs = require("fs");
 const Razorpay = require("razorpay");
 const razorpay = new Razorpay({
   key_id: "rzp_test_vYw0QMxTGojoMY",
   key_secret: "hkIVd7CkGLT4tpoRTBr1H2GE",
 });
-async function IndexPage(req, res) {
+async function indexPage(req, res) {
   try {
     let isLoggedIn;
     const categories = await services.getCategories();
@@ -24,8 +24,8 @@ async function IndexPage(req, res) {
     }
     isLoggedIn = true;
     const [userInfo] = await services.getUserInfo({ userId });
-    const totalAmountResult = await services.CalculateTotalAmount(userId);
-    const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+    const totalAmountResult = await services.calculateTotalAmount(userId);
+    const totalQuantityResult = await services.calculateTotalQuantity(userId);
     if (totalAmountResult.success && totalQuantityResult.success) {
       const totalAmount = totalAmountResult.totalAmount;
       const totalQuantity = totalQuantityResult.totalQuantity;
@@ -44,7 +44,7 @@ async function IndexPage(req, res) {
   }
 }
 
-async function ProductPage(req, res) {
+async function productPage(req, res) {
   try {
     const categoryId = req.params.id;
     const categories = await services.getCategories();
@@ -63,8 +63,8 @@ async function ProductPage(req, res) {
     }
     isLoggedIn = true;
     const [userInfo] = await services.getUserInfo({ userId });
-    const totalAmountResult = await services.CalculateTotalAmount(userId);
-    const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+    const totalAmountResult = await services.calculateTotalAmount(userId);
+    const totalQuantityResult = await services.calculateTotalQuantity(userId);
     if (totalAmountResult.success && totalQuantityResult.success) {
       const totalAmount = totalAmountResult.totalAmount;
       const totalQuantity = totalQuantityResult.totalQuantity;
@@ -83,7 +83,7 @@ async function ProductPage(req, res) {
   }
 }
 
-async function ViewMore(req, res) {
+async function viewMore(req, res) {
   try {
     const productId = req.params.id;
     const categories = await services.getCategories();
@@ -102,12 +102,12 @@ async function ViewMore(req, res) {
     }
     isLoggedIn = true;
     const [userInfo] = await services.getUserInfo({ userId });
-    const totalAmountResult = await services.CalculateTotalAmount(userId);
-    const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+    const totalAmountResult = await services.calculateTotalAmount(userId);
+    const totalQuantityResult = await services.calculateTotalQuantity(userId);
     if (totalAmountResult.success && totalQuantityResult.success) {
       const totalAmount = totalAmountResult.totalAmount;
       const totalQuantity = totalQuantityResult.totalQuantity;
-      return res.render("viewmore", {
+      return res.render("viewMore", {
         categories,
         products,
         isLoggedIn,
@@ -122,7 +122,7 @@ async function ViewMore(req, res) {
   }
 }
 
-async function SearchPage(req, res) {
+async function searchPage(req, res) {
   try {
     const searchTerm = req.query.q;
     const categories = await services.getCategories();
@@ -142,12 +142,12 @@ async function SearchPage(req, res) {
     }
     isLoggedIn = true;
     const [userInfo] = await services.getUserInfo({ userId });
-    const totalAmountResult = await services.CalculateTotalAmount(userId);
-    const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+    const totalAmountResult = await services.calculateTotalAmount(userId);
+    const totalQuantityResult = await services.calculateTotalQuantity(userId);
     if (totalAmountResult.success && totalQuantityResult.success) {
       const totalAmount = totalAmountResult.totalAmount;
       const totalQuantity = totalQuantityResult.totalQuantity;
-      return res.render("searchproducts", {
+      return res.render("searchProducts", {
         categories,
         products,
         searchTerm,
@@ -163,7 +163,7 @@ async function SearchPage(req, res) {
   }
 }
 
-async function ContactPage(req, res) {
+async function contactPage(req, res) {
   let isLoggedIn;
   const userId = req.cookies.userId;
   if (!userId) {
@@ -176,8 +176,8 @@ async function ContactPage(req, res) {
   }
   isLoggedIn = true;
   const [userInfo] = await services.getUserInfo({ userId });
-  const totalAmountResult = await services.CalculateTotalAmount(userId);
-  const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+  const totalAmountResult = await services.calculateTotalAmount(userId);
+  const totalQuantityResult = await services.calculateTotalQuantity(userId);
   if (totalAmountResult.success && totalQuantityResult.success) {
     const totalAmount = totalAmountResult.totalAmount;
     const totalQuantity = totalQuantityResult.totalQuantity;
@@ -190,7 +190,7 @@ async function ContactPage(req, res) {
   }
 }
 
-async function CartPage(req, res) {
+async function cartPage(req, res) {
   try {
     let isLoggedIn;
     const userId = req.cookies.userId;
@@ -207,9 +207,9 @@ async function CartPage(req, res) {
     isLoggedIn = true;
     const [userInfo] = await services.getUserInfo({ userId });
 
-    const totalQuantityResult = await services.CalculateTotalQuantity(userId);
-    const totalAmountResult = await services.CalculateTotalAmount(userId);
-    const fetchCartItemsResult = await services.FetchCartItems(userId);
+    const totalQuantityResult = await services.calculateTotalQuantity(userId);
+    const totalAmountResult = await services.calculateTotalAmount(userId);
+    const fetchCartItemsResult = await services.fetchCartItems(userId);
 
     if (
       totalAmountResult.success &&
@@ -255,20 +255,20 @@ async function CartPage(req, res) {
   }
 }
 
-async function ProfilePage(req, res) {
+async function profilePage(req, res) {
   let isLoggedIn;
   const userId = req.cookies.userId;
   isLoggedIn = true;
   const [userInfo] = await services.getUserInfo({ userId });
-  const totalAmountResult = await services.CalculateTotalAmount(userId);
-  const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+  const totalAmountResult = await services.calculateTotalAmount(userId);
+  const totalQuantityResult = await services.calculateTotalQuantity(userId);
   const totalAmount = totalAmountResult.totalAmount;
   const totalQuantity = totalQuantityResult.totalQuantity;
   const profileImage = await services.fetchProfileImage(userId);
   const pendingOrders = await services.getPendingOrders(userId);
   const pendingOrdersCount = pendingOrders.pendingOrdersCount;
   const userProfileImage = profileImage.Image[0].user_image;
-  res.render("user/myprofile", {
+  res.render("user/myProfile", {
     isLoggedIn,
     username: userInfo.user_name,
     totalAmount,
@@ -291,7 +291,7 @@ async function getPendingOrders(req, res) {
   }
 }
 
-async function AddToCart(req, res) {
+async function addToCart(req, res) {
   const productId = req.query.product_id;
   const userId = req.cookies.userId;
   console.log("User_Id===", userId);
@@ -305,9 +305,9 @@ async function AddToCart(req, res) {
 
   try {
     console.log("Adding to cart:", productId, userId);
-    const added = await services.AddCart(productId, userId);
-    const totalAmountResult = await services.CalculateTotalAmount(userId);
-    const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+    const added = await services.addCart(productId, userId);
+    const totalAmountResult = await services.calculateTotalAmount(userId);
+    const totalQuantityResult = await services.calculateTotalQuantity(userId);
     const totalAmount = totalAmountResult.totalAmount;
     const totalQuantity = totalQuantityResult.totalQuantity;
     console.log("Added to cart result:", added);
@@ -487,8 +487,11 @@ async function checkout(req, res) {
     const getCheckoutData = await services.getCheckoutData(userId);
     if (getCheckoutData.success) {
       res.render("user/checkoutMain", {
-        getCheckoutData,
+        total_price: getCheckoutData.total_price,
+        invoice_number: getCheckoutData.invoice_number,
+        count_products: getCheckoutData.count_products,
         name: getUserInfo.user_name,
+        address: getUserInfo.user_address,
       });
     }
   } catch (error) {
@@ -498,9 +501,9 @@ async function checkout(req, res) {
   }
 }
 
-async function paymentNow(req, res) {
+async function checkoutBegin(req, res) {
   const userId = req.cookies.userId;
-  const { name, amount, invoice, total_products } = req.body;
+  const { name, amount, invoice, total_products, deliver_address } = req.body;
   const actualAmount = amount * 100;
 
   const options = {
@@ -514,26 +517,30 @@ async function paymentNow(req, res) {
     const order = await razorpay.orders.create(options);
     if (order.id) {
       const status = "pending";
+      let orderProductId = [];
       const cartDetails = await services.getCartDetails(userId);
       if (cartDetails.cartDetails.length > 0) {
         for (const rowPrice of cartDetails.cartDetails) {
           const productId = rowPrice.product_id;
+          orderProductId.push(productId);
           const quantity = rowPrice.quantity;
           const insertOrderPending = await services.insertOrderPending(
             userId,
             invoice,
             productId,
-            status,
             quantity
           );
         }
       }
+const productIdsString = orderProductId.join(',');
       const insertUserOrder = await services.insertUserOrder(
         userId,
         amount,
         invoice,
         total_products,
-        status
+        status,
+        deliver_address,
+        productIdsString
       );
       const getUserOrdersDetails = await services.getUserOrdersDetails(invoice);
       const orderId = getUserOrdersDetails.getUserOrdersDetails[0].order_id;
@@ -557,7 +564,101 @@ async function paymentNow(req, res) {
   }
 }
 
-async function capturePayment(req, res) {
+async function checkoutPaymentComplete(req, res) {
+  const { payment_id } = req.body;
+
+  try {
+    if (payment_id) {
+      const order_id = req.session.orderId;
+      const updateOrderResult = await services.updateUserOrders(order_id);
+
+      if (updateOrderResult.success) {
+        const selectOrderResult = await services.selectUserOrders(order_id);
+        const userOrder = selectOrderResult.userOrders;
+        const statusForm = userOrder.order_status;
+        const invoice = userOrder.invoice_number;
+        const userId = userOrder.user_id;
+        const amount = userOrder.amount_due;
+        if (statusForm === "Complete") {
+          const paymentMode = "Razorpay";
+          const insertPaymentResult = await services.insertUserPayments(
+            userId,
+            order_id,
+            invoice,
+            amount,
+            paymentMode
+          );
+        }
+      }
+      res.json({ success: true });
+    } else {
+      res.json({ success: false, message: "Payment capture failed" });
+    }
+  } catch (error) {
+    console.error("Razorpay payment capture error:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error capturing payment" });
+  }
+}
+
+async function confirmOrders(req, res) {
+  try {
+    const userId = req.cookies.userId;
+    const orderId = req.params.orderId;
+    req.session.orderId = orderId;
+    const [getUserInfo] = await services.getUserInfo({ userId });
+    const getConfirmOrders = await services.getConfirmOrders(orderId);
+    if (getConfirmOrders.success) {
+      res.render("user/confirmOrders", {
+        total_price: getConfirmOrders.getConfirmOrders[0].amount_due,
+        invoice_number: getConfirmOrders.getConfirmOrders[0].invoice_number,
+        count_products: getConfirmOrders.getConfirmOrders[0].total_products,
+        name: getUserInfo.user_name,
+        address: getUserInfo.user_address,
+      });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+}
+
+async function confirmOrderBegin(req, res) {
+  const userId = req.cookies.userId;
+  const { name, amount, invoice, total_products } = req.body;
+  const actualAmount = amount * 100;
+
+  const options = {
+    amount: actualAmount,
+    currency: "INR",
+    receipt: invoice,
+    payment_capture: 1,
+  };
+
+  try {
+    const order = await razorpay.orders.create(options);
+    if (order.id) {
+      return res.json({
+        success: true,
+        orderId: order.id,
+        amount: actualAmount,
+        currency: "INR",
+        name: name,
+        totalProducts: total_products,
+        invoice: invoice,
+      });
+    }
+  } catch (error) {
+    console.error("Razorpay order creation error:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error creating Razorpay order" });
+  }
+}
+
+async function confirmOrderComplete(req, res) {
   const { payment_id } = req.body;
 
   try {
@@ -597,14 +698,14 @@ async function capturePayment(req, res) {
 }
 
 module.exports = {
-  IndexPage,
-  ProductPage,
-  ViewMore,
-  SearchPage,
-  ContactPage,
-  CartPage,
-  ProfilePage,
-  AddToCart,
+  indexPage,
+  productPage,
+  viewMore,
+  searchPage,
+  contactPage,
+  cartPage,
+  profilePage,
+  addToCart,
   updateQuantity,
   removeItem,
   getPendingOrders,
@@ -614,6 +715,9 @@ module.exports = {
   updateAccount,
   updateFormDataInDatabase,
   checkout,
-  paymentNow,
-  capturePayment,
+  checkoutBegin,
+  checkoutPaymentComplete,
+  confirmOrders,
+  confirmOrderBegin,
+  confirmOrderComplete,
 };

@@ -7,20 +7,20 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const userController = require("../controller/userController");
 
-router.get("/register", userController.RegisterPage);
+router.get("/register", userController.registerPage);
 router.post(
   "/register",
   upload.single("user_image"),
-  userController.ValidateRegister
+  userController.validateRegister
 );
-router.get("/register/verify", userController.VerifyOTPPage);
-router.post("/register/verify", userController.Verification);
-router.get("/register/resendOTP", userController.ResendOTP);
-router.get("/login", userController.LoginPage);
-router.post("/login", userController.LoginCredentials);
-router.get("/login/forgot-password", userController.ForgotPasswordPage);
-router.post("/login/forgot-password", userController.SendResetPasswordMail);
-router.get("/logout", userController.Logout);
-router.get("/refresh-captcha", userController.RefreshCaptcha);
+router.get("/register/verify", userController.verifyOTPPage);
+router.post("/register/verify", userController.verification);
+router.get("/register/resendOTP", userController.resendOTP);
+router.get("/login", userController.loginPage);
+router.post("/login", userController.loginCredentials);
+router.get("/login/forgot-password", userController.forgotPasswordPage);
+router.post("/login/forgot-password", userController.sendResetPasswordMail);
+router.get("/logout", userController.logout);
+router.get("/refresh-captcha", userController.refreshCaptcha);
 
 module.exports = router;

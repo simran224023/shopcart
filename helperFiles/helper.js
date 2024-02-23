@@ -2,7 +2,7 @@ const fast2sms = require("fast-two-sms");
 const nodemailer = require("nodemailer");
 const svgCaptcha = require("svg-captcha");
 const bcrypt = require("bcrypt");
-const services = require("../DBservices/services");
+const services = require("../servicesFiles/services");
 
 async function generateCaptcha() {
   const captchaText = await svgCaptcha.create();
@@ -132,14 +132,14 @@ async function sendEmail(email, name) {
   }
 }
 
-async function EmailIntegration(userData, imagePath) {
+async function emailIntegration(userData, imagePath) {
   try {
     const { user_username, user_mail, user_pass, user_add, user_contact } =
       userData;
 
     const hashedPassword = await bcrypt.hash(user_pass, 10);
 
-    const InsertUserData = await services.InsertUserData(
+    const InsertUserData = await services.insertUserData(
       user_username,
       user_mail,
       imagePath,
@@ -181,8 +181,8 @@ async function validateLoginCredentials(
 }
 
 async function recalculateTotals(userId) {
-  const totalAmountResult = await services.CalculateTotalAmount(userId);
-  const totalQuantityResult = await services.CalculateTotalQuantity(userId);
+  const totalAmountResult = await services.calculateTotalAmount(userId);
+  const totalQuantityResult = await services.calculateTotalQuantity(userId);
 
   return {
     totalAmount: totalAmountResult.totalAmount,
@@ -236,7 +236,7 @@ module.exports = {
   validation,
   sendOTP,
   sendEmail,
-  EmailIntegration,
+  emailIntegration,
   validateLoginCredentials,
   recalculateTotals,
   updateValidate,

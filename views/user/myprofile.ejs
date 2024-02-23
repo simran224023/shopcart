@@ -197,36 +197,46 @@
                 .then(data => {
                     const profileSetting = document.getElementById('profileSetting');
                     if (data.success && data.user_orders.length) {
+                        const groupedOrders = groupByAmountAndInvoice(data.user_orders);
                         const ordersTableHTML = `
                     <h3 class="text-center text-success mt-5">All My Orders</h3>
                     <table class="table table-bordered mt-3">
                         <thead class="bg-info text-center">
                             <tr>
-                                <th>Sr No.</th>
-                                <th>Amount</th>
-                                <th>Total Products</th>
-                                <th>Invoice Number</th>
-                                <th>Date</th>
-                                <th>Complete/Incomplete</th>
-                                <th>Status</th>
+                                <th style="font-size:15px">Sr No.</th>
+                                <th style="font-size:15px">Total Amount</th>
+                                <th style="font-size:15px">Invoice Number</th>
+                                <th style="font-size:15px">Product Name</th>
+                                <th style="font-size:15px">Product Image</th>
+                                <th style="font-size:15px">Quantity</th>
+                                <th style="font-size:15px">Product Price</th>
+                                <th style="font-size:15px">Date</th>
+                                <th style="font-size:15px">Complete/Incomplete</th>
+                                <th style="font-size:15px">Status</th>
                             </tr>
                         </thead>
                         <tbody class="bg-secondary text-light text-center">
-                            ${data.user_orders.map((order, index) => `
-                                <tr>
-                                    <td>${index + 1}</td>
-                                    <td>${order.amount_due}</td>
-                                    <td>${order.total_products}</td>
-                                    <td>${order.invoice_number}</td>
-                                    <td>${order.order_date}</td>
-                                    <td>${order.order_status === 'pending' ? 'Incomplete' : 'Complete'}</td>
-                                    ${order.order_status === 'Complete' ? '<td>Paid</td>' : `
-                                    <td>
-                                        <a href='' class='text-light me-3'>Confirm</a>
-                                        <a href='#' class='text-light' onclick='chkdel(event, ${order.order_id})'>Cancel</a>
-                                    </td>`}
-                                </tr>
-                            `).join('')}
+                        ${groupedOrders.map((group, groupIndex) => group.map((order, index) => `
+                            <tr>
+                            ${index === 0 ? `<td rowspan="${group.length}" style="vertical-align:middle;font-size:15px">${groupIndex + 1}</td>` : ''}
+                            ${index === 0 ? `<td rowspan="${group.length}" style="vertical-align:middle;font-size:15px">${order.amount_due}</td>` : ''}
+                            ${index === 0 ? `<td rowspan="${group.length}" style="vertical-align:middle;font-size:15px">${order.invoice_number}</td>` : ''}
+                            <td style="font-size:13px">${order.product_title}</td>
+                            <td><img src="images/${order.product_image1}" width="35px" height="35px" style="object-fit:contain"></td>
+                            <td style="font-size:13px">${order.quantity}</td>
+                            <td style="font-size:13px">${order.product_price}</td>
+                            ${index === 0 ? `<td rowspan="${group.length}" style="vertical-align:middle;font-size:15px">${formatDate(order.order_date)}</td>` : ''}
+                            ${index === 0 ? `<td rowspan="${group.length}" style="vertical-align:middle;font-size:15px">${order.order_status === 'pending' ? 'Incomplete' : 'Complete'}</td>` : ''}
+                           ${index === 0 ? `
+                            <td rowspan="${group.length}" style="vertical-align:middle">
+                                ${order.order_status === 'Complete' ? 'Paid' : `
+                                    <a href='/account/confirmOrders/${order.order_id}' class='text-light' style="font-size:12px">Confirm</a>
+                                    <a href='#' class='text-light' onclick='chkdel(event, ${order.order_id})' style="font-size:12px">Cancel</a>
+                                `}
+                            </td>` : ''}
+
+                            </tr>
+                        `).join('')).join('')}
                         </tbody>
                     </table>`;
 
@@ -238,6 +248,29 @@
                 .catch(error => {
                     console.error('Error fetching user orders:', error);
                 });
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+            const formattedDate = new Date(dateString).toLocaleDateString('en-US', options);
+            return formattedDate;
+        }
+
+
+        function groupByAmountAndInvoice(userOrders) {
+            const groupedOrders = [];
+
+            userOrders.forEach(order => {
+                const existingGroup = groupedOrders.find(group => group[0].amount_due === order.amount_due && group[0].invoice_number === order.invoice_number);
+
+                if (existingGroup) {
+                    existingGroup.push(order);
+                } else {
+                    groupedOrders.push([order]);
+                }
+            });
+
+            return groupedOrders;
         }
 
         async function chkdel(event, orderId) {

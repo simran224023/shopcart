@@ -156,7 +156,7 @@
                                         <%=totalAmount %>
                                     </span>
                                 </strong></h4>
-                            <a href="/checkout" class='bg-info px-3 py-2 border-0 text-decoration-none text-light m-2'
+                            <a href="/account/checkout" class='bg-info px-3 py-2 border-0 text-decoration-none text-light m-2'
                                 name='checkout_btn'>Checkout</a>
                             <a href="/" class='bg-info px-3 py-2 border-0 text-decoration-none text-light m-2'
                                 name='continue_shopping'>Continue Shopping</a>
@@ -192,9 +192,7 @@
         crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
-        // ... (existing code)
 
-        // Wait for the document to be ready
         $(document).ready(function () {
             // Handle quantity change
             $('.quantity-input').on('change', function () {

@@ -1,4 +1,4 @@
-const conn = require("../Includes/connection");
+const conn = require("../includes/connection");
 
 async function getUserInfo(payload) {
   const sqlCategory = "SELECT * FROM user_table where user_id=?";
@@ -64,7 +64,7 @@ async function getProductsBySearchTerm(searchTerm) {
   });
 }
 
-async function VerifyData(user_email, user_mobile) {
+async function verifyData(user_email, user_mobile) {
   const query = `
     SELECT * FROM user_table
     WHERE user_email = ? or user_mobile = ?;
@@ -85,7 +85,7 @@ async function VerifyData(user_email, user_mobile) {
   }
 }
 
-async function InsertUserData(
+async function insertUserData(
   username,
   email,
   imagePath,
@@ -112,7 +112,7 @@ async function InsertUserData(
   });
 }
 
-async function VerifyEmail(user_email) {
+async function verifyEmail(user_email) {
   const userQuery = "SELECT * FROM user_table WHERE user_email = ?;";
 
   try {
@@ -130,7 +130,7 @@ async function VerifyEmail(user_email) {
   }
 }
 
-async function AddCart(product_id, user_id) {
+async function addCart(product_id, user_id) {
   return new Promise((resolve, reject) => {
     // Check if the product is already in the cart for the user
     const checkSql =
@@ -190,7 +190,7 @@ async function AddCart(product_id, user_id) {
   });
 }
 
-async function CalculateTotalAmount(user_id) {
+async function calculateTotalAmount(user_id) {
   return new Promise((resolve, reject) => {
     const sql = `
       SELECT c.product_id, c.quantity, p.product_price
@@ -213,7 +213,7 @@ async function CalculateTotalAmount(user_id) {
   });
 }
 
-async function CalculateTotalQuantity(user_id) {
+async function calculateTotalQuantity(user_id) {
   return new Promise((resolve, reject) => {
     const sql = `
       SELECT SUM(quantity) AS total_quantity
@@ -232,7 +232,7 @@ async function CalculateTotalQuantity(user_id) {
   });
 }
 
-async function FetchCartItems(user_id) {
+async function fetchCartItems(user_id) {
   return new Promise((resolve, reject) => {
     const sql = `SELECT c.product_id, c.quantity, p.product_title, p.product_image1, p.product_price
     FROM cart_details c
@@ -298,7 +298,10 @@ async function removeItemInCart(userId, productId) {
 
 async function getUserOrders(user_id) {
   return new Promise((resolve, reject) => {
-    const sql = `Select * from user_orders where user_id=? order by order_id desc`;
+    const sql = `select us.order_id, us.amount_due, prod.product_title, prod.product_image1, prod.product_price,
+op.quantity, op.invoice_number, us.order_date, us.order_status from 
+products prod, user_orders us, orders_pending op where us.invoice_number = op.invoice_number 
+and op.product_id = prod.product_id and us.user_id=? order by us.order_id desc`;
     conn.query(sql, [user_id], (err, rows) => {
       if (err) {
         console.error("Error Fetching data:", err);
@@ -363,8 +366,8 @@ async function getCheckoutData(userId) {
   try {
     const status = "pending";
     const invoice_number = Math.floor(Math.random() * 1000000);
-    const total_price = await CalculateTotalAmount(userId);
-    const count_products = await CalculateTotalQuantity(userId);
+    const total_price = await calculateTotalAmount(userId);
+    const count_products = await calculateTotalQuantity(userId);
     return {
       success: true,
       message: "Checkout successful",
@@ -396,10 +399,10 @@ async function getCartDetails(userId) {
   });
 }
 
-async function insertOrderPending(userId, invoice, product_id, status, quantity) {
+async function insertOrderPending(userId, invoice, product_id, quantity) {
   return new Promise((resolve, reject) => {
-    const sql = `insert into orders_pending(user_id,invoice_number,product_id,order_status, quantity) values(?,?,?,?,?)`;
-    conn.query(sql, [userId, invoice, product_id, status, quantity], (err, rows) => {
+    const sql = `insert into orders_pending(user_id,invoice_number,product_id, quantity) values(?,?,?,?)`;
+    conn.query(sql, [userId, invoice, product_id, quantity], (err, rows) => {
       if (err) {
         console.error("Error fetching data:", err);
         reject({ success: false, message: "Internal Server Error" });
@@ -410,12 +413,28 @@ async function insertOrderPending(userId, invoice, product_id, status, quantity)
   });
 }
 
-async function insertUserOrder(userId, amount, invoice, products, status) {
+async function insertUserOrder(
+  userId,
+  amount,
+  invoice,
+  products,
+  status,
+  deliver_address,
+  orderProductId
+) {
   return new Promise((resolve, reject) => {
-    const sql = `INSERT INTO user_orders(user_id, amount_due, invoice_number, total_products, order_date, order_status) VALUES (?, ?, ?, ?, NOW(), ?)`;
+    const sql = `INSERT INTO user_orders(user_id, amount_due, invoice_number, total_products, order_date, order_status, deliver_address, product_ids) VALUES (?, ?, ?, ?, NOW(), ?, ?,?)`;
     conn.query(
       sql,
-      [userId, amount, invoice, products, status],
+      [
+        userId,
+        amount,
+        invoice,
+        products,
+        status,
+        deliver_address,
+        orderProductId,
+      ],
       (err, result) => {
         if (err) {
           console.error("Error inserting into user_orders:", err);
@@ -507,6 +526,20 @@ async function deleteCartDetails(user_id) {
   });
 }
 
+async function getConfirmOrders(order_id) {
+  return new Promise((resolve, reject) => {
+    const sql = `select * from user_orders where order_id =?`;
+    conn.query(sql, [order_id], (err, rows) => {
+      if (err) {
+        console.error("Error selecting user orders:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, getConfirmOrders: rows });
+      }
+    });
+  });
+}
+
 module.exports = {
   deleteCartDetails,
   insertUserPayments,
@@ -517,13 +550,13 @@ module.exports = {
   getProductsByProductId,
   getProductsByCategoryId,
   getProductsBySearchTerm,
-  VerifyData,
-  InsertUserData,
-  VerifyEmail,
-  AddCart,
-  CalculateTotalAmount,
-  CalculateTotalQuantity,
-  FetchCartItems,
+  verifyData,
+  insertUserData,
+  verifyEmail,
+  addCart,
+  calculateTotalAmount,
+  calculateTotalQuantity,
+  fetchCartItems,
   fetchProfileImage,
   getPendingOrders,
   updateQuantityInCart,
@@ -537,4 +570,5 @@ module.exports = {
   insertUserOrder,
   getUserOrdersDetails,
   updateUserOrders,
+  getConfirmOrders,
 };

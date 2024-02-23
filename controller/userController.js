@@ -4,13 +4,13 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const cookie = require("cookie-parser");
 const secretKey = "MAiMtInStiTute";
-const helper = require("../Helpers/helper");
-const services = require("../DBservices/services");
+const helper = require("../helperFiles/helper");
+const services = require("../servicesFiles/services");
 
-async function RegisterPage(req, res) {
+async function registerPage(req, res) {
   let captchaText = await helper.generateCaptcha();
   req.session.captchaText = captchaText.text;
-  return res.render("user/user_register", {
+  return res.render("user/userRegister", {
     username_error: "",
     usermail_error: "",
     image_error: "",
@@ -32,7 +32,7 @@ async function RegisterPage(req, res) {
   });
 }
 
-async function ValidateRegister(req, res, next) {
+async function validateRegister(req, res, next) {
   try {
     const {
       user_username,
@@ -83,7 +83,7 @@ async function ValidateRegister(req, res, next) {
     ) {
       const newCaptcha = await helper.generateCaptcha();
       req.session.captchaText = newCaptcha.text;
-      return res.render("user/user_register", {
+      return res.render("user/userRegister", {
         username_error,
         usermail_error,
         image_error,
@@ -105,14 +105,14 @@ async function ValidateRegister(req, res, next) {
       });
     }
 
-    const verifyData = await services.VerifyData(user_mail, user_contact);
+    const verifyData = await services.verifyData(user_mail, user_contact);
     console.log("Verify======", verifyData);
 
     if (verifyData.length > 0) {
       const message = "You are already Registered";
       const newCaptcha = await helper.generateCaptcha();
       req.session.captchaText = newCaptcha.text;
-      return res.render("user/user_register", {
+      return res.render("user/userRegister", {
         username_error,
         usermail_error,
         image_error,
@@ -162,8 +162,8 @@ async function ValidateRegister(req, res, next) {
   }
 }
 
-async function VerifyOTPPage(req, res) {
-  return res.render("user/verify_OTP", {
+async function verifyOTPPage(req, res) {
+  return res.render("user/verifyOTP", {
     message: "",
     showAlert: "",
     alertMessage: "",
@@ -171,7 +171,7 @@ async function VerifyOTPPage(req, res) {
   });
 }
 
-async function Verification(req, res) {
+async function verification(req, res) {
   const generatedOTP = req.session.OTP;
   console.log("Generated Otp ===", generatedOTP);
   const userEnteredOTP = req.body.otp;
@@ -182,20 +182,20 @@ async function Verification(req, res) {
     const imagePath = req.session.imagePath;
 
     try {
-      const emailIntegrationSuccess = await helper.EmailIntegration(
+      const emailIntegrationSuccess = await helper.emailIntegration(
         userData,
         imagePath
       );
 
       if (emailIntegrationSuccess) {
-        res.render("user/verify_OTP", {
+        res.render("user/verifyOTP", {
           message: "",
           showAlert: true,
           alertMessage: "You are Successfully Registered in Shopcart",
           redirectUrl: "/login",
         });
       } else {
-        return res.render("user/verify_OTP", {
+        return res.render("user/verifyOTP", {
           message: "Registration failed. Please try again.",
           showAlert: true,
           alertMessage: "Registration Failed",
@@ -206,7 +206,7 @@ async function Verification(req, res) {
       console.error("Error during EmailIntegration:", error);
     }
   } else {
-    return res.render("user/verify_OTP", {
+    return res.render("user/verifyOTP", {
       message: "Incorrect OTP",
       showAlert: "",
       alertMessage: "",
@@ -215,7 +215,7 @@ async function Verification(req, res) {
   }
 }
 
-async function ResendOTP(req, res) {
+async function resendOTP(req, res) {
   try {
     const user_contact = req.session.userData.user_contact;
     console.log("User Contact===", user_contact);
@@ -225,7 +225,7 @@ async function ResendOTP(req, res) {
       req.session.OTP = generatedOTP;
       return res.redirect("/register/verify");
     } else {
-      return res.render("user/verify_OTP", {
+      return res.render("user/verifyOTP", {
         error: "Failed to resend OTP",
         showAlert: "",
         alertMessage: "",
@@ -234,7 +234,7 @@ async function ResendOTP(req, res) {
     }
   } catch (error) {
     console.error("Error in ResendOTP:", error);
-    res.render("user/verify_OTP", {
+    res.render("user/verifyOTP", {
       message: "Internal Server Error",
       showAlert: "",
       alertMessage: "",
@@ -243,7 +243,7 @@ async function ResendOTP(req, res) {
   }
 }
 
-async function LoginPage(req, res) {
+async function loginPage(req, res) {
   let captchaText = await helper.generateCaptcha();
   req.session.captchaText = captchaText.text;
   res.render("user/login", {
@@ -259,7 +259,7 @@ async function LoginPage(req, res) {
   });
 }
 
-async function LoginCredentials(req, res) {
+async function loginCredentials(req, res) {
   try {
     const { user_email, user_password, captcha } = req.body;
     const enteredCaptcha = captcha || "";
@@ -289,7 +289,7 @@ async function LoginCredentials(req, res) {
       });
     }
 
-    const VerifyUser = await services.VerifyEmail(user_email);
+    const VerifyUser = await services.verifyEmail(user_email);
 
     if (VerifyUser && VerifyUser.length > 0) {
       const user = VerifyUser[0];
@@ -379,20 +379,20 @@ const verifyToken = (req, res, next) => {
   });
 };
 
-async function RefreshCaptcha(req, res) {
+async function refreshCaptcha(req, res) {
   const newCaptcha = await helper.generateCaptcha();
   req.session.captchaText = newCaptcha.text;
   res.json({ captchaText: newCaptcha.data });
 }
 
-async function ForgotPasswordPage(req, res) {
+async function forgotPasswordPage(req, res) {
   res.render("user/forgot", {
     mail_error: "",
     userEmail: "",
   });
 }
 
-async function SendResetPasswordMail(req, res) {
+async function sendResetPasswordMail(req, res) {
   const userEmail = req.body.user_email;
 
   if (!userEmail) {
@@ -401,7 +401,7 @@ async function SendResetPasswordMail(req, res) {
       userEmail,
     });
   }
-  const VerifyUser = await services.VerifyEmail(userEmail);
+  const VerifyUser = await services.verifyEmail(userEmail);
   console.log("VerifyUser===", VerifyUser);
   if (VerifyUser.length === 0) {
     return res.render("user/forgot", {
@@ -411,7 +411,7 @@ async function SendResetPasswordMail(req, res) {
   }
 }
 
-async function Logout(req, res) {
+async function logout(req, res) {
     res.clearCookie("token");
     res.clearCookie("userId");
     res.redirect("/");
@@ -419,16 +419,16 @@ async function Logout(req, res) {
 
 
 module.exports = {
-  VerifyOTPPage,
-  Verification,
-  ResendOTP,
-  LoginPage,
-  LoginCredentials,
+  verifyOTPPage,
+  verification,
+  resendOTP,
+  loginPage,
+  loginCredentials,
   verifyToken,
-  RegisterPage,
-  ValidateRegister,
-  RefreshCaptcha,
-  ForgotPasswordPage,
-  SendResetPasswordMail,
-  Logout,
+  registerPage,
+  validateRegister,
+  refreshCaptcha,
+  forgotPasswordPage,
+  sendResetPasswordMail,
+  logout,
 };
