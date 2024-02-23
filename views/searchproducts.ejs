@@ -176,24 +176,29 @@
                                 <% products.forEach(product=> { %>
                                     <div class='col-md-3 mb-2'>
                                         <div class='card'>
-                                            <img src='/images/<%= product.product_image1 %>' class='card-img-top'
-                                                alt='<%= product.product_title %>' width="170px" height="170px"
-                                                style="object-fit: contain;">
-                                            <div class='card-body'>
-                                                <h5 class='card-title'>
-                                                    <%= product.product_title %>
-                                                </h5>
-                                                <p class='card-text'>
-                                                    <%= product.product_description %>
-                                                </p>
-                                                <p>Price: <i class='fa fa-inr' aria-hidden='true'></i>
-                                                    <%= product.product_price %>
-                                                </p>
-                                                <button class='btn btn-info mb-2 addToCartBtn'
-                                                    data-product-id='<%= product.product_id %>'>Add to cart</button>
-                                                <a href='/viewmore/<%= product.product_id %>'
-                                                    class='btn btn-secondary mb-2' target='_blank'>View more</a>
-                                            </div>
+                                            <% if (product.bestseller=='yes' ) { %>
+                                                <span class='fw-bold text-light w-50 mb-2 text-center rounded'
+                                                style='background-color:#008E80'>Bestseller</span>
+                                                <% } %>
+                                                    <img src='/images/<%= product.product_image1 %>'
+                                                        class='card-img-top' alt='<%= product.product_title %>'
+                                                        width="170px" height="170px" style="object-fit: contain;">
+                                                    <div class='card-body'>
+                                                        <h5 class='card-title'>
+                                                            <%= product.product_title %>
+                                                        </h5>
+                                                        <p class='card-text'>
+                                                            <%= product.product_description %>
+                                                        </p>
+                                                        <p>Price: <i class='fa fa-inr' aria-hidden='true'></i>
+                                                            <%= product.product_price %>
+                                                        </p>
+                                                        <button class='btn btn-info mb-2 addToCartBtn'
+                                                            data-product-id='<%= product.product_id %>'>Add to
+                                                            cart</button>
+                                                        <a href='/viewmore/<%= product.product_id %>'
+                                                            class='btn btn-secondary mb-2' target='_blank'>View more</a>
+                                                    </div>
                                         </div>
                                     </div>
                                     <% }); }%>
