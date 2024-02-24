@@ -6,7 +6,6 @@ const cookie = require("cookie-parser");
 const secretKey = "MAiMtInStiTute";
 const helper = require("../helperFiles/helper");
 const services = require("../servicesFiles/services");
-const { Console } = require("console");
 
 async function registerPage(req, res) {
   try {
