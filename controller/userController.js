@@ -454,16 +454,16 @@ async function updatePassword(req, res) {
   const updatePassword = await helper.updatePassword(password, userId);
   if (updatePassword.success) {
     return res.render("user/resetPassword", {
-      pass_error:"",
-      conf_pass_error:"",
+      pass_error: "",
+      conf_pass_error: "",
       password,
       confPassword,
       alert: "Yes",
     });
   } else {
     return res.render("user/resetPassword", {
-      pass_error:"",
-      conf_pass_error:"",
+      pass_error: "",
+      conf_pass_error: "",
       password,
       confPassword,
       alert: "No",

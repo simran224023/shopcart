@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopcart Admin Login</title>
+    <!-- favicon -->
+    <link rel="icon" href="https://i.imgur.com/SkliARr.png" type="image/x-icon">
+    <link rel="shortcut icon" href="https://i.imgur.com/SkliARr.png" type="image/x-icon">
+    <!-- Bootstrap CSS link -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- Font Awesome link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- CSS File -->
+    <link href="../style.css" rel="stylesheet">
+    </link>
+    <style>
+        .title {
+            text-shadow: 0 0 3px #0000ff, 0 0 3px #0000ff;
+            margin: 0px;
+        }
+
+        .logo {
+            width: 100%;
+            height: 100%;
+            padding: 0px;
+            margin: 0px;
+            object-fit: contain;
+            margin-right: 0px;
+        }
+
+        .password-input {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-field {
+            padding-right: 30px;
+            /* Add space for the icon */
+        }
+
+        .toggle-icon {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <% if (alert=="yes" ) { %>
+        <script>alert("You are successfully LoggedIn!")</script>
+        <% } %>
+            <div class="container-fluid p-0">
+                <!-- first Child -->
+                <nav class="navbar navbar-expand-lg navbar-light bg-info p-1">
+                    <div class="container-fluid pl-0">
+                        <div style="width:200px; height:60px;" class="d-flex">
+                            <img src="https://i.imgur.com/SkliARr.png" alt="" class="logo">
+                            <span class="d-flex align-items-center">
+                                <h3 class="text-center fw-2 text-warning pt-1 title ps-0">Shopcart</h3>
+                            </span>
+                        </div>
+                    </div>
+                </nav>
+
+                <!--<h2 class="text-center fw-bold mt-3 fs-1">Admin Login</h2>-->
+                <div class="d-flex justify-content-center py-3 mt-5 container"
+                    style="background-color:skyblue;border-radius:15px;">
+                    <!--<div class="col-lg-6 col-xl-5">-->
+                    <img src="https://i.imgur.com/nTj4W4H.png" alt="Admin Login" class="img-fluid" width="30%"
+                        height="30%" style="object-fit:contain;">
+                    <!--</div>-->
+                    <div class="col-lg-7 col-xl-7">
+                        <h2 class="text-center fw-bold mt-1 fs-1">Admin Login</h2>
+                        <form action="" method="post"
+                            style="background-color:#eee;border-radius:15px;" class="px-4 py-3 ">
+                            <!-- Username -->
+                            <div class="form-outline mb-3">
+                                <label for="adminEmail" class="form-label mb-0 fw-bold ">Email</label>
+                                <input type="email" id="adminEmail" name="adminEmail" placeholder="Enter Email"
+                                    class="form-control" value="<%= adminEmail %>">
+                                <span class="text-danger fw-bold" style="font-size:10px;">
+                                    <%= adminEmailError %>
+                                </span>
+                            </div>
+                            <!-- Password -->
+                            <div class="form-outline mb-3">
+                                <label for="adminPassword" class="form-label mb-0 fw-bold">Password</label>
+                                <div class="password-input">
+                                    <input type="password" id="adminPassword" name="adminPassword" class="form-control"
+                                        placeholder="Enter Password" autocomplete="off" value="<%= adminPassword %>">
+                                    <span class="toggle-icon" id="toggleIcon" onclick="togglePassword()">
+                                        <i class="fas fa-eye-slash"></i>
+                                    </span>
+                                </div>
+                                <span class="text-danger fw-bold" style="font-size:10px;">
+                                    <%= adminPasswordError %>
+                                </span>
+                            </div>
+
+                            <!-- captcha -->
+                            <div class="form-outline mb-3">
+                                <label for="captcha" class="form-label mb-0 fw-bold">Captcha</label>
+                                <input type="text" id="captcha" name="captcha" class="form-control"
+                                    placeholder="Enter characters here" value="">
+                                <span class="text-danger fw-bold p-0" style="font-size:10px;">
+                                    <%= captcha_error %>
+                                </span>
+                                <p class="mt-2 text-center">
+                                    <img src="data:image/svg+xml;charset=utf-8,<%= encodeURIComponent(captchaText) %>"
+                                        alt="CAPTCHA" id="captchaImage">
+                                    <a class="refresh-icon text-secondary px-1 text-light" onclick="refreshCaptcha()"
+                                        style="background-color:blue; border-radius:50%;">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </a>
+                                </p>
+                            </div>
+                            <div>
+                                <input type="submit" value="Login" class="bg-info py-2 px-3 rounded border-0"
+                                    name="admin_login">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <script>
+                function refreshCaptcha() {
+                    fetch('/refresh-captcha')
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('captchaImage').src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(data.captchaText);
+                        })
+                        .catch(error => console.error('Error refreshing captcha:', error));
+                }
+                function togglePassword() {
+                    var passwordField = document.getElementById("adminPassword");
+                    var toggleIcon = document.getElementById("toggleIcon");
+
+                    if (passwordField.type == "password") {
+                        passwordField.type = "text";
+                        toggleIcon.innerHTML = '<i class="fas fa-eye"></i>';
+                    } else {
+                        passwordField.type = "password";
+                        toggleIcon.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                    }
+                }
+            </script>
+</body>
+
+</html>

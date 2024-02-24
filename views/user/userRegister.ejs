@@ -58,7 +58,9 @@
         <div class="row d-flex justify-content-center">
             <div class="lg-12 col-xl-6">
                 <div class="bg-danger text-light fw-bold text-center">
-                    <p><%= message %></p>
+                    <p>
+                        <%= message %>
+                    </p>
                 </div>
                 <!-- Username -->
                 <form action="/register" method="post" enctype="multipart/form-data"
@@ -97,7 +99,7 @@
                         <label for="user_pass" class="form-label  mb-0 fw-bold">Password</label>
                         <div class="password-input">
                             <input type="password" id="user_pass" name="user_pass" class="form-control"
-                                placeholder="Enter 8 character password"  value="<%= user_pass  %>">
+                                placeholder="Enter 8 character password" value="<%= user_pass  %>">
                             <span class="toggle-icon" id="toggleIcon" onclick="togglePassword()">
                                 <i class="fas fa-eye-slash"></i>
                             </span>
@@ -112,7 +114,7 @@
                         <label for="conf_user_pass" class="form-label   mb-0 fw-bold">Confirm Password</label>
                         <div class="password-input">
                             <input type="password" id="conf_user_pass" name="conf_user_pass" class="form-control"
-                                placeholder="Confirm Password"  value="<%= conf_user_pass  %>">
+                                placeholder="Confirm Password" value="<%= conf_user_pass  %>">
                             <span class="toggle-icon" id="toggleConfIcon" onclick="toggleConfPassword()">
                                 <i class="fas fa-eye-slash"></i>
                             </span>
@@ -126,8 +128,8 @@
                     <!-- Address -->
                     <div class="form-outline mb-3">
                         <label for="user_add" class="form-label   mb-0 fw-bold">Address</label>
-                        <input type="text" id="user_add" name="user_add" class="form-control" 
-                            value="<%= user_add  %>" placeholder="Enter your Address">
+                        <input type="text" id="user_add" name="user_add" class="form-control" value="<%= user_add  %>"
+                            placeholder="Enter your Address">
                         <span class="text-danger fw-bold" id="error_user_add" style="font-size:10px;">
                             <%= add_error %>
                         </span>
@@ -137,7 +139,7 @@
                     <div class="form-outline mb-3">
                         <label for="user_contact" class="form-label  mb-0 fw-bold">Contact</label>
                         <input type="tel" id="user_contact" name="user_contact" class="form-control"
-                            placeholder="9087654321"  value="<%= user_contact  %>">
+                            placeholder="9087654321" value="<%= user_contact  %>">
                         <span class="text-danger fw-bold" id="error_user_contact" style="font-size:10px;">
                             <%= contact_error %>
                         </span>
@@ -156,12 +158,14 @@
                             <a class="refresh-icon text-secondary px-1 text-light" onclick="refreshCaptcha()"
                                 style="background-color:blue; border-radius:50%;">
                                 <i class="fas fa-sync-alt"></i>
-                        </a>
+                            </a>
                         </p>
                     </div>
                     <div class="mt-4 pt-2 form-outline">
-                        <input type="submit" value="Register" class="bg-info py-2 px-4 border-0 rounded text-light fw-bold fs-5" name="registration">
-                        <p class="small fw-bold mt-2 pt-1">Already have an account? <a href="/login" class="text-danger">Login</a></p>
+                        <input type="submit" value="Register"
+                            class="bg-info py-2 px-4 border-0 rounded text-light fw-bold fs-5" name="registration">
+                        <p class="small fw-bold mt-2 pt-1">Already have an account? <a href="/login"
+                                class="text-danger">Login</a></p>
                     </div>
                 </form>
             </div>
@@ -197,13 +201,11 @@
         }
     }
     function refreshCaptcha() {
-  // Make an AJAX request to get a new captcha
-  fetch('/refresh-captcha')
-    .then(response => response.json())
-    .then(data => {
-      // Update the captcha image source
-      document.getElementById('captchaImage').src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(data.captchaText);
-    })
-    .catch(error => console.error('Error refreshing captcha:', error));
-}
+        fetch('/refresh-captcha')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('captchaImage').src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(data.captchaText);
+            })
+            .catch(error => console.error('Error refreshing captcha:', error));
+    }
 </script>

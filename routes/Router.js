@@ -3,12 +3,14 @@ const router = express.Router();
 const otherController = require("../controller/otherController");
 const userController = require("../controller/userController");
 const userRoutes = require("../routes/userRoutes");
+const adminRoutes = require("../routes/adminRoutes");
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 
 router.use("/", userRoutes);
+router.use("/admin", adminRoutes);
 router.get("/", otherController.indexPage);
 router.get("/getCategory/:id", otherController.productPage);
 router.get("/viewmore/:id", otherController.viewMore);

@@ -282,11 +282,80 @@ async function validatePassword(password, confirmPassword) {
 
 async function updatePassword(password, userId) {
   const hashedPassword = await bcrypt.hash(password, 10);
-  const updatePassword = await services.updatePassword(hashedPassword,userId);
-console.log("update=====", updatePassword)
+  const updatePassword = await services.updatePassword(hashedPassword, userId);
+  console.log("update=====", updatePassword);
   if (updatePassword.success) {
     return { success: true };
   }
+}
+
+async function adminRegisterValidate(payload) {
+  const adminName = payload.adminName;
+  const adminEmail = payload.adminEmail;
+  const adminPassword = payload.adminPassword;
+  const confAdminPassword = payload.adminConfPassword;
+  const enteredCaptcha = payload.enteredCaptcha;
+  const storedCaptcha = payload.storedCaptcha;
+  const allowedFormats = payload.allowedFormats;
+  const adminImage = payload.adminImage;
+  const adminNameError = !adminName
+    ? "Username is required"
+    : /^[A-Z][a-zA-Z\s]+$/.test(adminName)
+    ? ""
+    : "Username must start with a capital letter and contain only letters";
+  const adminEmailError = !adminEmail
+    ? "Email is required"
+    : /^\S+@\S+\.\S+$/.test(adminEmail)
+    ? ""
+    : "Invalid email format";
+  const adminImageError = adminImage
+    ? allowedFormats.includes(adminImage.mimetype) &&
+      adminImage.size <= 5 * 1024 * 1024
+      ? ""
+      : "Invalid image format or size (max 5MB, PNG or JPEG only)"
+    : "User Image is required";
+  const adminPasswordError = !adminPassword
+    ? "Password is required"
+    : /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*_-])/.test(adminPassword)
+    ? ""
+    : "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character";
+  const adminConfPasswordError = !confAdminPassword
+    ? "Confirm Password is required"
+    : adminPassword === confAdminPassword
+    ? ""
+    : "Passwords do not match";
+  const captcha_error = !enteredCaptcha
+    ? "Captcha is required"
+    : enteredCaptcha !== storedCaptcha
+    ? "Invalid Captcha"
+    : "";
+  return {
+    adminNameError,
+    adminEmailError,
+    adminPasswordError,
+    adminImageError,
+    adminConfPasswordError,
+    captcha_error,
+  };
+}
+
+async function validateAdminLoginCredentials(
+  adminEmail,
+  adminPassword,
+  enteredCaptcha,
+  storedCaptcha
+) {
+  const adminLoginErrors = {
+    email: !adminEmail ? "Email is required" : "",
+    password: !adminPassword ? "Password is required" : "",
+    captcha: !enteredCaptcha
+      ? "Captcha is required"
+      : enteredCaptcha !== storedCaptcha
+      ? "Invalid Captcha"
+      : "",
+  };
+
+  return adminLoginErrors;
 }
 module.exports = {
   generateCaptcha,
@@ -300,4 +369,6 @@ module.exports = {
   sendForgotPasswordMail,
   validatePassword,
   updatePassword,
+  adminRegisterValidate,
+  validateAdminLoginCredentials,
 };

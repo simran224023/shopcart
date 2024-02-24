@@ -540,8 +540,8 @@ async function getConfirmOrders(order_id) {
   });
 }
 
-async function updatePassword(password, userId){
-return new Promise((resolve, reject) => {
+async function updatePassword(password, userId) {
+  return new Promise((resolve, reject) => {
     const sql = "UPDATE user_table SET user_password = ? WHERE user_id = ?";
     conn.query(sql, [password, userId], (err, result) => {
       if (err) {
@@ -552,6 +552,70 @@ return new Promise((resolve, reject) => {
       }
     });
   });
+}
+
+async function verifyAdminData(admin_email) {
+  const query = `
+    SELECT * FROM admin_table
+    WHERE admin_email = ?;
+  `;
+
+  try {
+    const result = await new Promise((resolve, reject) => {
+      conn.query(query, [admin_email], (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Error in VerifyData:", error);
+    throw error;
+  }
+}
+
+async function insertAdminData(
+  admin_name,
+  admin_email,
+  admin_image,
+  admin_password
+) {
+  const query = `
+    INSERT INTO admin_table 
+    (admin_name, admin_email, admin_password, admin_image) 
+    VALUES (?, ?, ?, ?)
+  `;
+
+  const values = [admin_name, admin_email, admin_password, admin_image];
+
+  return new Promise((resolve, reject) => {
+    conn.query(query, values, (error, results) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve({ success: true, results });
+      }
+    });
+  });
+}
+
+async function verifyAdmin(adminEmail) {
+  const userQuery = "SELECT * FROM admin_table WHERE admin_email = ?;";
+
+  try {
+    const result = await new Promise((resolve, reject) => {
+      conn.query(userQuery, [adminEmail], (err, result) => {
+        if (err) reject(err);
+        else resolve(result || []); // Ensure that result is an array, even if it's falsy
+      });
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Error in VerifyData:", error);
+    throw error;
+  }
 }
 
 module.exports = {
@@ -585,5 +649,8 @@ module.exports = {
   getUserOrdersDetails,
   updateUserOrders,
   getConfirmOrders,
-updatePassword
+  updatePassword,
+  verifyAdminData,
+  insertAdminData,
+  verifyAdmin,
 };
