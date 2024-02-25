@@ -357,6 +357,70 @@ async function validateAdminLoginCredentials(
 
   return adminLoginErrors;
 }
+
+async function validateInsertProducts(payload) {
+  const {
+    product_title,
+    product_description,
+    product_keywords,
+    product_category,
+    product_price,
+    bestseller,
+    product_image1,
+    product_image2,
+    product_image3,
+  } = payload;
+
+  // Validation for text fields
+  const product_title_error = !product_title ? "Product Title is required" : "";
+  const product_description_error = !product_description
+    ? "Product Description is required"
+    : "";
+  const product_keywords_error = !product_keywords
+    ? "Product Keywords are required"
+    : "";
+  const product_price_error = !product_price
+    ? "Product Price is required"
+    : !/^\d+$/.test(product_price)
+    ? "Price must be a positive integer"
+    : "";
+
+  // Validation for select list
+  const product_category_error = !product_category
+    ? "Product Category is required"
+    : "";
+
+  // Validation for image fields
+  const validateImage = (image, fieldName) => {
+    return image
+      ? image.size <= 5 * 1024 * 1024
+        ? ["image/jpeg", "image/png"].includes(image.mimetype)
+          ? ""
+          : `Invalid format for ${fieldName}. Only PNG or JPEG allowed`
+        : `Size of ${fieldName} exceeds the maximum allowed size (5MB)`
+      : `${fieldName} is required`;
+  };
+
+  const product_image1_error = validateImage(product_image1, "Product Image 1");
+  const product_image2_error = validateImage(product_image2, "Product Image 2");
+  const product_image3_error = validateImage(product_image3, "Product Image 3");
+
+  // Validation for radio button
+  const bestseller_error = !bestseller ? "Bestseller is required" : "";
+
+  return {
+    product_title_error,
+    product_description_error,
+    product_keywords_error,
+    product_category_error,
+    product_price_error,
+    product_image1_error,
+    product_image2_error,
+    product_image3_error,
+    bestseller_error,
+  };
+}
+
 module.exports = {
   generateCaptcha,
   validation,
@@ -371,4 +435,5 @@ module.exports = {
   updatePassword,
   adminRegisterValidate,
   validateAdminLoginCredentials,
+  validateInsertProducts,
 };

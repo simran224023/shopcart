@@ -19,6 +19,8 @@ app.use(express.static("public"));
 // Serve static files from the "images" directory under the "/images" path
 app.use("/images", express.static("images"));
 app.use("/uploads", express.static("uploads"));
+app.use("/adminImages", express.static("adminImages"));
+app.use("/productsImages", express.static("productsImages"));
 
 // Set up session middleware with a secret, disabling resaving, enabling uninitialized sessions, and configuring the session cookie
 app.use(

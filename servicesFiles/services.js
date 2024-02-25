@@ -618,6 +618,86 @@ async function verifyAdmin(adminEmail) {
   }
 }
 
+async function getAdminInfo(payload) {
+  const sqlCategory = "SELECT * FROM admin_table where admin_id=?";
+
+  return new Promise((resolve, reject) => {
+    conn.query(sqlCategory, [payload.adminId], (err, result) => {
+      if (err) reject(err);
+      else resolve(result);
+    });
+  });
+}
+
+async function insertProductsData(payload) {
+  const status = "TRUE";
+  const query = `
+    INSERT INTO products 
+    (product_title, product_description, product_keywords, category_id, product_image1, product_image2, product_image3, product_price, date, status, bestseller) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)
+`;
+
+  const values = [
+    payload.product_title,
+    payload.product_description,
+    payload.product_keywords,
+    payload.product_category,
+    payload.productImageName1,
+    payload.productImageName2,
+    payload.productImageName3,
+    payload.product_price,
+    status,
+    payload.bestseller,
+  ];
+
+  return new Promise((resolve, reject) => {
+    conn.query(query, values, (error, results) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve({ success: true, results });
+      }
+    });
+  });
+}
+
+async function getOrderPending() {
+  const sql =
+    "SELECT count(*) as productCount, product_id FROM orders_pending group by product_id";
+
+  return new Promise((resolve, reject) => {
+    conn.query(sql, (err, result) => {
+      if (err) reject(err);
+      else resolve({ success: true, result });
+    });
+  });
+}
+
+async function deleteProductsByProductId(productId) {
+  return new Promise((resolve, reject) => {
+    const sql = `DELETE FROM products WHERE product_id=?`;
+    conn.query(sql, [productId], (err, result) => {
+      if (err) {
+        console.error("Error deleting products:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, deleteProductsDetails: result });
+      }
+    });
+  });
+}
+
+async function getProductById(productId){
+const sqlProduct = "SELECT * FROM products where product_id=?";
+
+  return new Promise((resolve, reject) => {
+    conn.query(sqlProduct,[productId], (err, result) => {
+      if (err) reject(err);
+      else resolve({success:true,result});
+    });
+  });
+}
+
 module.exports = {
   deleteCartDetails,
   insertUserPayments,
@@ -653,4 +733,9 @@ module.exports = {
   verifyAdminData,
   insertAdminData,
   verifyAdmin,
+  getAdminInfo,
+  insertProductsData,
+  getOrderPending,
+  deleteProductsByProductId,
+getProductById
 };

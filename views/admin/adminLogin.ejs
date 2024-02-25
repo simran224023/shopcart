@@ -57,6 +57,7 @@
 <body>
     <% if (alert=="yes" ) { %>
         <script>alert("You are successfully LoggedIn!")</script>
+        <script>window.location.href = "/admin/dashboard"</script>
         <% } %>
             <div class="container-fluid p-0">
                 <!-- first Child -->
@@ -80,8 +81,8 @@
                     <!--</div>-->
                     <div class="col-lg-7 col-xl-7">
                         <h2 class="text-center fw-bold mt-1 fs-1">Admin Login</h2>
-                        <form action="" method="post"
-                            style="background-color:#eee;border-radius:15px;" class="px-4 py-3 ">
+                        <form action="" method="post" style="background-color:#eee;border-radius:15px;"
+                            class="px-4 py-3 ">
                             <!-- Username -->
                             <div class="form-outline mb-3">
                                 <label for="adminEmail" class="form-label mb-0 fw-bold ">Email</label>
