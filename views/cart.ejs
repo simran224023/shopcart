@@ -19,22 +19,10 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- CSS File -->
-    <link href="style.css" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet">
     </link>
-
-    <style>
-        body {
-            padding-top: 76px;
-            background-color: eee;
-            padding-bottom: 76px;
-        }
-
-        .logo {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-    </style>
+    <link href="/bodyPadding.css" rel="stylesheet">
+    </link>
 </head>
 
 <body>
@@ -125,25 +113,21 @@
                                         <td>
                                             <%= item.product_title %>
                                         </td>
-                                        <td><img src="/images/<%=item.product_image1 %>" alt="Product Image"
+                                        <td><img src="/productsImages/<%=item.product_image1 %>" alt="Product Image"
                                                 style="width: 50px; height: 50px;object-fit: contain;"></td>
                                         <td>
                                             <input type="number" class="quantity-input" value="<%= item.quantity %>"
-                                                data-product-id="<%= item.product_id %>" min="1">
+                                                data-product-id="<%= item.product_id %>" min="1"
+                                                onchange="updateQuantity.call(this)">
                                         </td>
                                         <td><i class="fa fa-inr fs-6" aria-hidden="true"></i>
                                             <%= item.product_price %>
                                         </td>
                                         <td> <button class="btn btn-info px-2 py-1 remove-item"
-                                                data-product-id="<%= item.product_id %>">
+                                                data-product-id="<%= item.product_id %>" onclick="removeItem.call(this, event)">
                                                 Remove Item
                                             </button>
                                         </td>
-                                        <script>
-                                            function chkdel() {
-                                                return confirm("Are you sure you want to delete this product?");
-                                            }
-                                        </script>
                                     </tr>
                             </tbody>
                             <% }); %>
@@ -156,7 +140,8 @@
                                         <%=totalAmount %>
                                     </span>
                                 </strong></h4>
-                            <a href="/account/checkout" class='bg-info px-3 py-2 border-0 text-decoration-none text-light m-2'
+                            <a href="/account/checkout"
+                                class='bg-info px-3 py-2 border-0 text-decoration-none text-light m-2'
                                 name='checkout_btn'>Checkout</a>
                             <a href="/" class='bg-info px-3 py-2 border-0 text-decoration-none text-light m-2'
                                 name='continue_shopping'>Continue Shopping</a>
@@ -191,53 +176,7 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script>
-
-        $(document).ready(function () {
-            // Handle quantity change
-            $('.quantity-input').on('change', function () {
-                const productId = $(this).data('product-id');
-                const newQuantity = $(this).val();
-
-                // Make an AJAX request to update the quantity in the server
-                $.post('/updateQuantity', { productId, newQuantity })
-                    .done(function (response) {
-                        $('#totalQuantity').text(response.totalQuantity);
-                        $('#subtotalValue').text(response.totalAmount); // Fix the ID here
-                        alert(response.message);
-                        // Optionally, update the UI if the server-side update is successful
-                    })
-                    .fail(function (error) {
-                        alert('Error updating quantity: ' + error.responseJSON.message);
-                    });
-            });
-        });
-        $(document).ready(function () {
-            $('.remove-item').on('click', function (e) {
-                e.preventDefault();
-                const productId = $(this).data('product-id');
-                const $button = $(this);
-                // Make an AJAX request to remove the item from the server
-                $.post('/removeItem', { productId })
-                    .done(function (response) {
-                        $('#totalQuantity').text(response.totalQuantity);
-                        $('#subtotalValue').text(response.totalAmount);
-                        $('#noItemMessage').text(response.noItemMessage);
-                        alert(response.message);
-                        setTimeout(function () {
-                            window.location.href = "/cart";
-                        }, 1000);
-                        // Remove the row from the table
-                        $button.closest('tr').remove();
-                    })
-                    .fail(function (error) {
-                        alert('Error removing item: ' + error.responseJSON.message);
-                    });
-            });
-        });
-
-    </script>
-
+    <script src="/commonJsFunc.js"></script>
 </body>
 
 </html>

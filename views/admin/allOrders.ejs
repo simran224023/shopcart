@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Category</title>
+    <!-- Bootstrap CSS Link -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- Font Awesome link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- CSS File -->
+    <link href="/style.css" rel="stylesheet">
+    </link>
+    <link href="/adminBodyStyle.css" rel="stylesheet">
+    </link>
+
+    <!-- Data Table -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+    </link>
+    <link rel="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+    </link>
+    <!-- favicon -->
+    <link rel="icon" href="https://i.imgur.com/SkliARr.png" type="image/x-icon">
+    <link rel="shortcut icon" href="https://i.imgur.com/SkliARr.png" type="image/x-icon">
+</head>
+
+<body>
+    <div class="container-fluid  p-0">
+        <nav class="navbar navbar-expand-lg navbar-light bg-info p-1 fixed-top">
+            <div class="container-fluid pl-0">
+                <div style="width:250px; height:60px;" class="d-flex">
+                    <a href="/admin/dashboard"><img src="https://i.imgur.com/SkliARr.png" alt="" class="logo"></a>
+                    <a href="/admin/dashboard" class="d-flex align-items-center text-decoration-none">
+                        <h3 class="text-center fw-2 text-warning pt-1 title ps-0 ms-0">Shopcart</h3>
+                    </a>
+                </div>
+                <a class='btn btn-danger text-light px-3 fw-bold float-right my-3' href="/admin/adminLogout">Logout</a>
+            </div>
+        </nav>
+
+        <div class="container">
+
+            <table class="table table-bordered mt-0 mb-3 table-striped" id="example" style="width:100%; margin:auto">
+                <thead class="bg-info text-center">
+
+
+                    <% if (userOrders.length>0) { %>
+                        <h2 class='text-center text-dark mt-4 fs-1 fw-bold'>All Orders</h2>
+                        <tr>
+                            <th>Sr No.</th>
+                            <th>User id</th>
+                            <th>Amount</th>
+                            <th>Invoice Number</th>
+                            <th>Total Products</th>
+                            <th>Order Date</th>
+                            <th>Status</th>
+                        </tr>
+                </thead>
+
+                <tbody class=" text-center">
+                    <% for( let i=0; i < userOrders.length; i++ ) { %>
+                        <tr>
+                            <td>
+                                <%= i+1 %>
+                            </td>
+                            <td>
+                                <%= userOrders[i].user_id %>
+                            </td>
+                            <td><i class="fa fa-inr fs-6"></i>
+                                <%= userOrders[i].amount_due %>
+                            </td>
+                            <td>
+                                <%= userOrders[i].invoice_number %>
+                            </td>
+                            <td>
+                                <%= userOrders[i].total_products %>
+                            </td>
+                            <td>
+                                <%= userOrders[i].order_date %>
+                            </td>
+                            <td>
+                                <%= userOrders[i].order_status %>
+                            </td>
+                        </tr>
+                        <% } %>
+                            <% }else { %>
+
+                                <h2 class='text-danger fs-1 text-center mt-5 fw-bold'>No Orders</h2>
+                                <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Bootstrap JS Link -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+    <script src="/commonJsFunc.js"></script>
+
+</body>
+
+</html>

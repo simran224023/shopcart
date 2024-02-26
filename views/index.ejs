@@ -19,21 +19,11 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- CSS File -->
-    <link href="style.css" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet">
     </link>
-    <style>
-        body {
-            padding-top: 76px;
-            background-color: #eee;
-            padding-bottom: 76px;
-        }
+    <link href="/bodyPadding.css" rel="stylesheet">
+    </link>
 
-        .logo {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-    </style>
 </head>
 
 <body>
@@ -93,20 +83,8 @@
                             <%}%>
 
 
-                                <script>
-                                    document.getElementById("searchTerm").addEventListener("keyup", function () {
-                                        if (event.key === "Enter")
-                                            submitForm();
-                                    });
 
-                                    function submitForm() {
-                                        const searchValue = document.getElementById("searchTerm").value.trim();
-                                        if (searchValue) {
-                                            document.getElementById("searchForm").action = `/search/${encodeURIComponent(searchValue)}`;
-                                            document.getElementById("searchForm").submit();
-                                        }
-                                    }
-                                </script>
+
                 </div>
             </div>
         </nav>
@@ -143,7 +121,7 @@
                                     <a href='/getCategory/<%= category.category_id %>'
                                         class='nav-link text-dark d-flex justify-content-center align-item-center'
                                         style='width:80px; height:80px;'>
-                                        <img src='/images/<%= category.category_image %>' width=70px height=70px
+                                        <img src='/categoryImages/<%= category.category_image %>' width=70px height=70px
                                             class='p-0 mb-0'>
                                     </a>
                                     <p class='m-0 p-0 d-flex justify-content-center align-item-center'>
@@ -176,9 +154,9 @@
                                                 <span class='fw-bold text-light w-50 mb-2 text-center rounded'
                                                     style='background-color:#008E80'>Bestseller</span>
 
-                                                <img src='/images/<%= product.product_image1 %>' class='card-img-top'
-                                                    alt='<%= product.product_title %>' width="170px" height="170px"
-                                                    style="object-fit: contain;">
+                                                <img src='/productsImages/<%= product.product_image1 %>'
+                                                    class='card-img-top' alt='<%= product.product_title %>'
+                                                    width="170px" height="170px" style="object-fit: contain;">
                                                 <div class='card-body'>
                                                     <h5 class='card-title'>
                                                         <%= product.product_title %>
@@ -190,7 +168,8 @@
                                                         <%= product.product_price %>
                                                     </p>
                                                     <button class='btn btn-info mb-2 addToCartBtn'
-                                                        data-product-id='<%= product.product_id %>'>Add to cart</button>
+                                                        data-product-id='<%= product.product_id %>'
+                                                        onclick="addToCart.call(this)">Add to cart</button>
                                                     <a href='/viewmore/<%= product.product_id %>'
                                                         class='btn btn-secondary mb-2' target='_blank'>View more</a>
                                                 </div>
@@ -214,37 +193,7 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $(document).on('click', '.addToCartBtn', function () {
-                // Retrieve the product ID from the data attribute
-                var product_id = $(this).data('product-id');
-                console.log(product_id);
-                $.ajax({
-                    url: `/addToCart?product_id=${product_id}`,
-                    method: 'GET',
-                    success: function (response) {
-                        if (response && response.totalQuantity !== undefined && response.totalAmount !== undefined) {
-                            $('.nav-link.ms-2[href="/cart"] sup.fs-5').text(response.totalQuantity);
-
-                            const formattedAmount = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(parseFloat(response.totalAmount));
-                            $('#totalPriceLink').html(`Total Price: ${formattedAmount}`);
-
-
-                            alert("Item is added to cart");
-                        } else {
-                            console.error('Invalid response format:', response);
-                            alert("Please Login");
-                        }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.error('AJAX Error:', textStatus, errorThrown);
-                        alert("Please Login");
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="/commonJsFunc.js"></script>
 
 
 </body>

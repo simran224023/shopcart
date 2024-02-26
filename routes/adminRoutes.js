@@ -39,8 +39,102 @@ router.post(
   adminController.insertProducts
 );
 
-router.get("/viewProducts",adminController.verifyToken,adminController.viewProductsPage);
-router.get("/deleteProducts/:productId",adminController.verifyToken,adminController.deleteProducts)
-router.get("/editProducts/:productId",adminController.verifyToken,adminController.editProductsPage)
+router.get(
+  "/viewProducts",
+  adminController.verifyToken,
+  adminController.viewProductsPage
+);
+router.get(
+  "/deleteProducts/:productId",
+  adminController.verifyToken,
+  adminController.deleteProducts
+);
+router.get(
+  "/editProducts/:productId",
+  adminController.verifyToken,
+  adminController.editProductsPage
+);
 
+router.post(
+  "/editProducts/:productId",
+  adminController.verifyToken,
+  upload.fields([
+    { name: "product_image1", maxCount: 1 },
+    { name: "product_image2", maxCount: 1 },
+    { name: "product_image3", maxCount: 1 },
+  ]),
+  adminController.editProductsValidateAndUpdate
+);
+
+router.get(
+  "/product/export",
+  adminController.verifyToken,
+  adminController.exportProductData
+);
+router.get(
+  "/product/import",
+  adminController.verifyToken,
+  adminController.importProductData
+);
+router.get(
+  "/insertCategory",
+  adminController.verifyToken,
+  adminController.insertCategoryPage
+);
+
+router.post(
+  "/insertCategory",
+  adminController.verifyToken,
+  upload.single("cat_image"),
+  adminController.insertCategory
+);
+
+router.get(
+  "/viewCategory",
+  adminController.verifyToken,
+  adminController.viewCategoryPage
+);
+
+router.get(
+  "/deleteCategory/:categoryId",
+  adminController.verifyToken,
+  adminController.deleteCategory
+);
+
+router.get(
+  "/editCategory/:categoryId",
+  adminController.verifyToken,
+  adminController.editCategoryPage
+);
+
+router.post(
+  "/editCategory/:categoryId",
+  adminController.verifyToken,
+  upload.single("cate_image"),
+  adminController.editCategory
+);
+
+router.get(
+  "/allOrders",
+  adminController.verifyToken,
+  adminController.getAllOrdersPage
+);
+
+router.get(
+  "/allPayments",
+  adminController.verifyToken,
+  adminController.getAllPaymentsPage
+);
+
+router.get(
+  "/listUsers",
+  adminController.verifyToken,
+  adminController.getAllUsersPage
+);
+
+router.get(
+  "/deleteUser/:userId",
+  adminController.verifyToken,
+  adminController.deleteUserById
+);
 module.exports = router;

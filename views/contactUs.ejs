@@ -19,17 +19,11 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- CSS File -->
-    <link href="style.css" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet">
     </link>
     <style>
         body {
             padding-top: 76px;
-        }
-
-        .logo {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
         }
     </style>
 </head>
@@ -76,15 +70,11 @@
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link ms-2" href="#" id="totalPriceLink">Total Price: <i
-                                                class="fa fa-inr fs-6" aria-hidden="true"></i><%= totalAmount %>
+                                                class="fa fa-inr fs-6" aria-hidden="true"></i>
+                                            <%= totalAmount %>
                                         </a>
                                     </li>
                     </ul>
-                    <!-- search -->
-                    <!-- <form class="d-flex" action="/search" method="get" id="searchForm">
-                        <input class="form-control me-2 w-100" type="search" placeholder="Search" aria-label="Search"
-                            name="q" id="searchTerm">
-                        </form> -->
                     <% if (!isLoggedIn) { %>
                         <a class='btn btn-danger text-light ms-4 px-3' href='/login'>Login</a>
                         <%}else{%>
@@ -92,23 +82,6 @@
                             <%}%>
 
 
-
-                                <script>
-                                    // Listen for the input event on the search input field
-                                    document.getElementById("searchTerm").addEventListener("keyup", function () {
-                                        if (event.key === "Enter")
-                                            submitForm();
-                                    });
-
-                                    function submitForm() {
-                                        const searchValue = document.getElementById("searchTerm").value.trim();
-                                        if (searchValue) {
-                                            // Append the search term to the URL and trigger the form submission
-                                            document.getElementById("searchForm").action = `/search/${encodeURIComponent(searchValue)}`;
-                                            document.getElementById("searchForm").submit();
-                                        }
-                                    }
-                                </script>
                 </div>
             </div>
         </nav>
@@ -177,41 +150,7 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $(document).on('click', '.addToCartBtn', function () {
-                // Retrieve the product ID from the data attribute
-                var product_id = $(this).data('product-id');
-                console.log(product_id);
-                $.ajax({
-                    url: `/addToCart?product_id=${product_id}`,
-                    method: 'GET',
-                    success: function (response) {
-                        // Check if the response has the expected properties
-                        if (response && response.totalQuantity !== undefined && response.totalAmount !== undefined) {
-                            // Update the total quantity on the page
-                            $('.nav-link.ms-2[href="/cart"] sup.fs-5').text(response.totalQuantity);
-
-                            // Update the total amount on the page
-                            const formattedAmount = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(parseFloat(response.totalAmount));
-                            $('#totalPriceLink').html(`Total Price: ${formattedAmount}`);
-
-
-                            // Show an alert that the item is added to the cart
-                            alert("Item is added to cart");
-                        } else {
-                            console.error('Invalid response format:', response);
-                            alert("Please Login");
-                        }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.error('AJAX Error:', textStatus, errorThrown);
-                        alert("Please Login");
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="/commonJsFunc.js"></script>
 </body>
 
 </html>

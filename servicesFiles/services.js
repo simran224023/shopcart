@@ -687,17 +687,193 @@ async function deleteProductsByProductId(productId) {
   });
 }
 
-async function getProductById(productId){
-const sqlProduct = "SELECT * FROM products where product_id=?";
+async function getProductById(productId) {
+  const sqlProduct = "SELECT * FROM products where product_id=?";
 
   return new Promise((resolve, reject) => {
-    conn.query(sqlProduct,[productId], (err, result) => {
+    conn.query(sqlProduct, [productId], (err, result) => {
       if (err) reject(err);
-      else resolve({success:true,result});
+      else resolve({ success: true, result });
     });
   });
 }
 
+async function updateProductsData(payload) {
+  const status = "TRUE";
+  const query = `
+    UPDATE products SET
+    product_title=?, product_description=?, product_keywords=?, category_id=?, product_image1=?, product_image2=?, product_image3=?, product_price=?, date=NOW(), status="TRUE", bestseller=?
+where product_id=?
+`;
+
+  const values = [
+    payload.product_title,
+    payload.product_description,
+    payload.product_keywords,
+    payload.product_category,
+    payload.productImageName1,
+    payload.productImageName2,
+    payload.productImageName3,
+    payload.product_price,
+    payload.bestseller,
+    payload.productId,
+  ];
+
+  return new Promise((resolve, reject) => {
+    conn.query(query, values, (error, results) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve({ success: true, results });
+      }
+    });
+  });
+}
+
+async function insertImportProductData(row) {
+  const query = `
+    INSERT INTO products (product_title, product_description, product_keywords, category_id, product_image1, product_image2, product_image3, product_price, status, date, bestseller)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+
+    `;
+
+  const values = [
+    row.product_title,
+    row.product_description,
+    row.product_keywords,
+    row.category_id,
+    row.product_image1,
+    row.product_image2,
+    row.product_image3,
+    row.product_price,
+    row.status,
+    row.date,
+    row.bestseller,
+  ];
+
+  return new Promise((resolve, reject) => {
+    conn.query(query, values, (error, results) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve({ success: true, results });
+      }
+    });
+  });
+}
+
+async function insertCategory(payload) {
+  const query = `
+    INSERT INTO categories (category_title, category_image)
+VALUES (?, ?)
+
+    `;
+
+  const values = [payload.categoryTitle, payload.imageName];
+
+  return new Promise((resolve, reject) => {
+    conn.query(query, values, (error, results) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve({ success: true, results });
+      }
+    });
+  });
+}
+
+async function deleteCategoryByCategoryId(categoryId) {
+  return new Promise((resolve, reject) => {
+    const sql = `DELETE FROM categories WHERE category_id=?`;
+    conn.query(sql, [categoryId], (err, result) => {
+      if (err) {
+        console.error("Error deleting category:", err);
+        reject({ success: false, message: "Internal Server Error" });
+      } else {
+        resolve({ success: true, deleteCategoryDetails: result });
+      }
+    });
+  });
+}
+
+async function getCategoryByCategoryId(categoryId) {
+  const sqlProduct = "SELECT * FROM categories where category_id=?";
+
+  return new Promise((resolve, reject) => {
+    conn.query(sqlProduct, [categoryId], (err, result) => {
+      if (err) reject(err);
+      else resolve({ success: true, result });
+    });
+  });
+}
+
+async function updateCategory(payload) {
+  const query = `
+    UPDATE categories SET
+    category_title=?, category_image=?
+where category_id=?
+`;
+
+  const values = [
+    payload.categoryTitle,
+    payload.categoryImageName,
+    payload.categoryId,
+  ];
+
+  return new Promise((resolve, reject) => {
+    conn.query(query, values, (error, results) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve({ success: true, results });
+      }
+    });
+  });
+}
+
+async function getAllOrders() {
+  const sqlProduct = "SELECT * FROM user_orders";
+
+  return new Promise((resolve, reject) => {
+    conn.query(sqlProduct, (err, result) => {
+      if (err) reject(err);
+      else resolve({ success: true, result });
+    });
+  });
+}
+
+async function getAllPayments() {
+  const sqlProduct = "SELECT * FROM user_payments";
+
+  return new Promise((resolve, reject) => {
+    conn.query(sqlProduct, (err, result) => {
+      if (err) reject(err);
+      else resolve({ success: true, result });
+    });
+  });
+}
+
+async function getAllUsers() {
+  const sqlProduct = "SELECT * FROM user_table";
+
+  return new Promise((resolve, reject) => {
+    conn.query(sqlProduct, (err, result) => {
+      if (err) reject(err);
+      else resolve({ success: true, result });
+    });
+  });
+}
+
+async function deleteUser(userId) {
+  const sqlProduct = "DELETE FROM user_table where user_id=?";
+
+  return new Promise((resolve, reject) => {
+    conn.query(sqlProduct, [userId],(err, result) => {
+      if (err) reject(err);
+      else resolve({ success: true, result });
+    });
+  });
+}
 module.exports = {
   deleteCartDetails,
   insertUserPayments,
@@ -737,5 +913,15 @@ module.exports = {
   insertProductsData,
   getOrderPending,
   deleteProductsByProductId,
-getProductById
+  getProductById,
+  updateProductsData,
+  insertImportProductData,
+  insertCategory,
+  deleteCategoryByCategoryId,
+  getCategoryByCategoryId,
+  updateCategory,
+  getAllOrders,
+  getAllPayments,
+  getAllUsers,
+deleteUser
 };

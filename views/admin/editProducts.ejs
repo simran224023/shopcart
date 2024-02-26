@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insert products-Admin Dashboard</title>
+    <title>Edit Products</title>
     <!-- Bootstrap CSS Link -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -15,177 +15,177 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- CSS File -->
-    <link href="style.css" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet">
     </link>
-    <style>
-        body {
-            padding-bottom: 76px;
-            padding-top: 76px;
-        }
-
-        .title {
-            text-shadow: 0 0 3px #0000ff, 0 0 3px #0000ff;
-            margin: 0px;
-        }
-
-        .logo {
-            width: 100%;
-            height: 100%;
-            padding: 0px;
-            margin: 0px;
-            object-fit: contain;
-            margin-right: 0px;
-        }
-    </style>
+    <link href="/adminBodyStyle.css" rel="stylesheet">
+    </link>
+    <!-- favicon -->
+    <link rel="icon" href="https://i.imgur.com/SkliARr.png" type="image/x-icon">
+    <link rel="shortcut icon" href="https://i.imgur.com/SkliARr.png" type="image/x-icon">
 </head>
 
 <body>
-    <div class="container-fluid  p-0">
-        <nav class="navbar navbar-expand-lg navbar-light bg-info p-1 fixed-top">
-            <div class="container-fluid pl-0">
-                <div style="width:250px; height:60px;" class="d-flex">
-                    <a href="/admin/dashboard"><img src="https://i.imgur.com/SkliARr.png" alt="" class="logo"></a>
-                    <a href="/admin/dashboard" class="d-flex align-items-center text-decoration-none">
-                        <h3 class="text-center fw-2 text-warning pt-1 title ps-0 ms-0">Shopcart</h3>
-                    </a>
+    <% if (alert=="yes" ) { %>
+        <script>alert("Product updated successfully!")</script>
+        <script>window.location.href = "/admin/viewProducts"</script>
+        <% } %>
+            <div class="container-fluid  p-0">
+                <nav class="navbar navbar-expand-lg navbar-light bg-info p-1 fixed-top">
+                    <div class="container-fluid pl-0">
+                        <div style="width:250px; height:60px;" class="d-flex">
+                            <a href="/admin/dashboard"><img src="https://i.imgur.com/SkliARr.png" alt=""
+                                    class="logo"></a>
+                            <a href="/admin/dashboard" class="d-flex align-items-center text-decoration-none">
+                                <h3 class="text-center fw-2 text-warning pt-1 title ps-0 ms-0">Shopcart</h3>
+                            </a>
+                        </div>
+                        <a class='btn btn-danger text-light px-3 fw-bold float-right my-3'
+                            href="/admin/adminLogout">Logout</a>
+                    </div>
+                </nav>
+                <div class="container mt-4">
+                    <h1 class="text-center fs-1 fw-bold">Edit Products</h1>
+                    <!-- Form -->
+                    <form action="" method="post" enctype="multipart/form-data"
+                        style="background-color:#eee;border-radius:15px" class="py-4 px-5 m-auto">
+                        <!-- Title -->
+                        <% getProductById.forEach(product=> { %>
+                            <div class="form-outline mb-3 m-auto">
+                                <label for="product_title" class="form-label mb-0 fw-bold">Product Title</label>
+                                <input type="text" name="product_title" id="product_title" class="form-control"
+                                    placeholder="Enter Product Title" autocomplete="off"
+                                    value="<%= !(product_title) ? product.product_title :  product_title%>">
+                                <span class="text-danger m-0 fw-bold" style="font-size:10px;">
+                                    <%= product_title_error %>
+                                </span>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="form-outline mb-3  m-auto">
+                                <label for="product_description" class="form-label mb-0 fw-bold">Product
+                                    Description</label>
+                                <input type="text" name="product_description" id="product_description"
+                                    class="form-control" placeholder="Enter Product Description" autocomplete="off"
+                                    value="<%= !(product_description) ? product.product_description : product_description%>">
+                                <span class="text-danger m-0 fw-bold" style="font-size:10px;">
+                                    <%= product_description_error %>
+
+                                </span>
+                            </div>
+
+                            <!-- Keyword -->
+                            <div class="form-outline mb-3  m-auto">
+                                <label for="product_keywords" class="form-label fw-bold mb-0">Product Keywords</label>
+                                <input type="text" name="product_keywords" id="product_keywords" class="form-control"
+                                    placeholder="Enter Product Keyword" autocomplete="off"
+                                    value="<%= !(product_keywords) ? product.product_keywords : product_keywords%>">
+                                <span class="text-danger m-0 fw-bold" style="font-size:10px;">
+                                    <%= product_keywords_error %>
+
+                                </span>
+                            </div>
+
+                            <!-- Categories -->
+                            <div class="form-outline mb-3 m-auto">
+                                <label for="product_category" class="form-label fw-bold mb-0">Product Category</label>
+                                <select name="product_category" id="" class="form-select">
+                                    <option value="">Select a Category</option>
+                                    <% for (let i=0; i < getCategories.length; i++) { %>
+                                        <option value='<%= getCategories[i].category_id %>' <%=((product_category=="" )
+                                            ? product.category_id : product_category)==getCategories[i].category_id
+                                            ? "selected" : "" %>>
+                                            <%= getCategories[i].category_title %>
+                                        </option>
+                                        <% } %>
+                                </select>
+
+                                <span class="text-danger m-0 fw-bold" style="font-size:10px;">
+                                    <%= product_category_error %>
+                                </span>
+                            </div>
+
+
+
+                            <!-- Image 1 -->
+                            <div class="form-outline mb-3 m-auto">
+                                <label for="product_image1" class="form-label fw-bold mb-0">Product Image 1</label>
+                                <div class="d-flex">
+                                    <input type="file" id="product_image1" name="product_image1" class="form-control">
+                                    <img src="/productsImages/<%= product.product_image1 %>" alt="" width="35px"
+                                        height="35px" style="object-fit:contain;">
+                                </div> <span class="text-danger m-0 fw-bold" style="font-size:10px;">
+                                    <%= product_image1_error %>
+
+                                </span>
+                            </div>
+                            <!-- Image 2 -->
+                            <div class="form-outline mb-3  m-auto">
+                                <label for="product_image2" class="form-label fw-bold mb-0">Product Image 2</label>
+                                <div class="d-flex">
+                                    <input type="file" id="product_image2" name="product_image2" class="form-control">
+                                    <img src="/productsImages/<%= product.product_image2 %>" alt="" width="35px"
+                                        height="35px" style="object-fit:contain;">
+                                </div> <span class="text-danger m-0 fw-bold" style="font-size:10px;">
+                                    <%= product_image2_error %>
+                                </span>
+                            </div>
+
+                            <!-- Image 3 -->
+                            <div class="form-outline mb-3  m-auto">
+                                <label for="product_image3" class="form-label fw-bold mb-0">Product Image 3</label>
+                                <div class="d-flex">
+                                    <input type="file" id="product_image3" name="product_image3" class="form-control">
+                                    <img src="/productsImages/<%= product.product_image3 %>" alt="" width="35px"
+                                        height="35px" style="object-fit:contain;">
+                                </div> <span class="text-danger m-0 fw-bold" style="font-size:10px;">
+                                    <%= product_image3_error %>
+                                </span>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="form-outline mb-3  m-auto">
+                                <label for="product_price" class="form-label fw-bold mb-0">Product Price</label>
+                                <input type="text" name="product_price" id="product_price" class="form-control"
+                                    placeholder="Enter Product Price" autocomplete="off"
+                                    value="<%= !(product_price) ?  product.product_price : product_price %>">
+                                <span class="text-danger m-0 fw-bold" style="font-size:10px;">
+                                    <%= product_price_error %>
+                                </span>
+                            </div>
+
+                            <!-- Bestseller -->
+                            <div class="form-outline mb-3 m-auto">
+                                <label for="bestseller" class="form-label fw-bold mb-0">Bestseller</label><br>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="bestseller" id="bestseller_yes"
+                                        value="yes" <%=((bestseller=="" ) ? product.bestseller : bestseller)==='yes'
+                                        ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="bestseller_yes">Yes</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="bestseller" id="bestseller_no"
+                                        value="no" <%=((bestseller=="" ) ? product.bestseller : bestseller)==='no'
+                                        ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="bestseller_no">No</label>
+                                </div>
+                                <span class="text-danger m-0 fw-bold" style="font-size:10px;">
+                                    <%= bestseller_error %>
+                                </span>
+                            </div>
+
+                            <% }); %>
+                                <!-- submit -->
+                                <div class="form-outline mb-2 mt-4  m-auto">
+                                    <input type="submit" name="editProducts" class="btn btn-info mb-3 px-3"
+                                        value="Edit Products">
+                                </div>
+                    </form>
                 </div>
-                <a class='btn btn-danger text-light px-3 fw-bold float-right my-3' href="/admin/adminLogout">Logout</a>
             </div>
-        </nav>
-        <div class="container mt-4">
-            <h1 class="text-center fs-1 fw-bold">Edit Products</h1>
-            <!-- Form -->
-            <form action="" method="post" enctype="multipart/form-data" style="background-color:#eee;border-radius:15px"
-                class="py-4 px-5 m-auto">
-                <!-- Title -->
-                <% getProductById.forEach(product=> { %>
-
-
-                    <div class="form-outline mb-3 m-auto">
-                        <label for="product_title" class="form-label mb-0 fw-bold">Product Title</label>
-                        <input type="text" name="product_title" id="product_title" class="form-control"
-                            placeholder="Enter Product Title" autocomplete="off" value="<%= product.product_title %>">
-                        <span class="text-danger m-0 fw-bold" style="font-size:10px;">
-                        </span>
-                    </div>
-
-                    <!-- Description -->
-                    <div class="form-outline mb-3  m-auto">
-                        <label for="product_description" class="form-label mb-0 fw-bold">Product Description</label>
-                        <input type="text" name="product_description" id="product_description" class="form-control"
-                            placeholder="Enter Product Description" autocomplete="off"
-                            value="<%= product.product_description %>">
-                        <span class="text-danger m-0 fw-bold" style="font-size:10px;">
-
-                        </span>
-                    </div>
-
-                    <!-- Keyword -->
-                    <div class="form-outline mb-3  m-auto">
-                        <label for="product_keywords" class="form-label fw-bold mb-0">Product Keywords</label>
-                        <input type="text" name="product_keywords" id="product_keywords" class="form-control"
-                            placeholder="Enter Product Keyword" autocomplete="off"
-                            value="<%= product.product_keywords %>">
-                        <span class="text-danger m-0 fw-bold" style="font-size:10px;">
-
-                        </span>
-                    </div>
-
-                    <!-- Categories -->
-                    <div class="form-outline mb-3 m-auto">
-                        <label for="product_category" class="form-label fw-bold mb-0">Product Category</label>
-                        <select name="product_category" id="" class="form-select">
-                            <option value="">Select a Category</option>
-                            <% for (let i=0; i < getCategories.length; i++) { %>
-                                <option value='<%= getCategories[i].category_id %>'
-                                    <%=product.category_id===getCategories[i].category_id ? "selected" : "" %>>
-                                    <%= getCategories[i].category_title %>
-                                </option>
-                                <% } %>
-                        </select>
-
-                        <span class="text-danger m-0 fw-bold" style="font-size:10px;">
-
-                        </span>
-                    </div>
-
-
-
-                    <!-- Image 1 -->
-                    <div class="form-outline mb-3 m-auto">
-                        <label for="product_image1" class="form-label fw-bold mb-0">Product Image 1</label>
-                        <div class="d-flex">
-                            <input type="file" id="product_image1" name="product_image1" class="form-control">
-                            <img src="/productsImages/<%= product.product_image1 %>" alt="" width="35px" height="35px"
-                                style="object-fit:contain;">
-                        </div> <span class="text-danger m-0 fw-bold" style="font-size:10px;">
-
-                        </span>
-                    </div>
-                    <!-- Image 2 -->
-                    <div class="form-outline mb-3  m-auto">
-                        <label for="product_image2" class="form-label fw-bold mb-0">Product Image 2</label>
-                        <div class="d-flex">
-                            <input type="file" id="product_image2" name="product_image2" class="form-control">
-                            <img src="/productsImages/<%= product.product_image2 %>" alt="" width="35px" height="35px"
-                                style="object-fit:contain;">
-                        </div> <span class="text-danger m-0 fw-bold" style="font-size:10px;">
-
-                        </span>
-                    </div>
-
-                    <!-- Image 3 -->
-                    <div class="form-outline mb-3  m-auto">
-                        <label for="product_image3" class="form-label fw-bold mb-0">Product Image 3</label>
-                        <div class="d-flex">
-                            <input type="file" id="product_image3" name="product_image3" class="form-control">
-                            <img src="/productsImages/<%= product.product_image3 %>" alt="" width="35px" height="35px"
-                                style="object-fit:contain;">
-                        </div> <span class="text-danger m-0 fw-bold" style="font-size:10px;">
-
-                        </span>
-                    </div>
-
-                    <!-- Price -->
-                    <div class="form-outline mb-3  m-auto">
-                        <label for="product_price" class="form-label fw-bold mb-0">Product Price</label>
-                        <input type="text" name="product_price" id="product_price" class="form-control"
-                            placeholder="Enter Product Price" autocomplete="off" value="<%= product.product_price %>">
-                        <span class="text-danger m-0 fw-bold" style="font-size:10px;">
-
-                        </span>
-                    </div>
-
-                    <!-- Bestseller -->
-                    <div class="form-outline mb-3 m-auto">
-                        <label for="bestseller" class="form-label fw-bold mb-0">Bestseller</label><br>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="bestseller" id="bestseller_yes"
-                                value="yes" <%=product.bestseller==='yes' ? 'checked' : '' %>>
-                            <label class="form-check-label" for="bestseller_yes">Yes</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="bestseller" id="bestseller_no" value="no"
-                                <%=product.bestseller==='no' ? 'checked' : '' %>>
-                            <label class="form-check-label" for="bestseller_no">No</label>
-                        </div>
-                        <span class="text-danger m-0 fw-bold" style="font-size:10px;">
-                        </span>
-                    </div>
-
-                    <% }); %>
-                        <!-- submit -->
-                        <div class="form-outline mb-2 mt-4  m-auto">
-                            <input type="submit" name="editProducts" class="btn btn-info mb-3 px-3"
-                                value="Edit Products">
-                        </div>
-            </form>
-        </div>
-    </div>
-    <!-- Bootstrap JS Link -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
+            <!-- Bootstrap JS Link -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+                crossorigin="anonymous"></script>
 </body>
 
 </html>

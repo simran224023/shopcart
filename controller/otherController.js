@@ -91,7 +91,7 @@ async function viewMore(req, res) {
     let isLoggedIn;
     const userId = req.cookies.userId;
     if (!userId) {
-      return res.render("getCategoryProducts", {
+      return res.render("viewMore", {
         categories,
         products,
         isLoggedIn: false,
