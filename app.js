@@ -1,4 +1,5 @@
 // Import necessary modules
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const app = express();
@@ -8,6 +9,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const router = require("./routes/router");
+const PORT = process.env.PORT
 
 // Set the view engine to EJS
 app.set("view engine", "ejs");
@@ -46,6 +48,6 @@ app.use(bodyParser.json());
 app.use("/", router);
 
 // // Start the server and listen on port 3009
-app.listen(3009, () => {
-  console.log(`Server is running on 3009`);
+app.listen(PORT, () => {
+  console.log(`Server is running on ${PORT}`);
 });

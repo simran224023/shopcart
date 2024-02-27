@@ -2,10 +2,10 @@
   "name": "shopcart",
   "version": "1.0.0",
   "description": "E-Commerce Website",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "cookie-parser": "^1.4.6",
     "csv-parser": "^3.0.0",
     "csv-writer": "^1.6.0",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "express-fileupload": "^1.4.3",
