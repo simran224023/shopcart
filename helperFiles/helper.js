@@ -119,6 +119,7 @@ async function sendOTP(phoneNumber) {
       numbers: phoneNumber, // Replace with actual phone numbers
     });
     console.log("Options===", data);
+    return otp;
     const config = {
       method: "post",
       url: "https://www.fast2sms.com/dev/bulkV2",
