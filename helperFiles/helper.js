@@ -124,7 +124,7 @@ async function sendOTP(phoneNumber) {
       url: "https://www.fast2sms.com/dev/bulkV2",
       headers: {
         authorization: YOUR_API_KEY,
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type":"application/json"
       },
       data: data,
     };
