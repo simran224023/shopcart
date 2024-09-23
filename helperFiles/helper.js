@@ -247,7 +247,7 @@ async function sendForgotPasswordMail(user_email, user_id) {
       to: user_email,
       subject: "Shopcart Reset Password",
       html: `<p style="font-size:20px">Click the following link to reset your Shopcart password:</p>
-           <a href="http://localhost:3009/login/reset-password?userId=${user_id}">Reset Password</a>`,
+           <a href="http://localhost:3306/login/reset-password?userId=${user_id}">Reset Password</a>`,
     };
 
     const info = await transporter.sendMail(mailOptions);
