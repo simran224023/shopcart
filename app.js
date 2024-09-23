@@ -8,7 +8,7 @@ const upload = multer({ dest: "uploads/" });
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
-const router = require("./routes/router");
+const router = require('./routes/router');
 const PORT = process.env.PORT
 
 // Set the view engine to EJS
