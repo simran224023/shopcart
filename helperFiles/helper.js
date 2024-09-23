@@ -3,7 +3,8 @@ const nodemailer = require("nodemailer");
 const svgCaptcha = require("svg-captcha");
 const bcrypt = require("bcrypt");
 const services = require("../servicesFiles/services");
-
+const axios = require("axios");
+const qs = require("qs");
 async function generateCaptcha() {
   const captchaText = await svgCaptcha.create();
   return {
@@ -77,47 +78,89 @@ async function validation(payload) {
   };
 }
 
+// async function sendOTP(phoneNumber) {
+//   const YOUR_API_KEY =
+//     // "cP8nX0UDBCruhbbkgWmXQCIedwGciV0vJtmt3Pw3fTLGyLzmpfvn3Ii9VKOc";
+//     "2di4uRQxZfHpNgjXteE8Or3bBlVFYmDG7AWTnhwo019zCvMy6Si1fZgs0VCIjBQoLuldP8WYatrc9HxG";
+//   const otp = Math.floor(100000 + Math.random() * 900000).toString();
+//   // Set your options
+//   const options = {
+//     authorization: YOUR_API_KEY,
+//     message: `Your OTP is ${otp}`,
+//     numbers: [phoneNumber],
+//   };
+//   console.log("Options===", options);
+//   try {
+//     //   Send SMS
+//     const response = await fast2sms.sendMessage(options);
+//     console.log("Response from sendMessage:", response);
+//     if (response.return === true) {
+//       console.log("OTP===", otp);
+//       console.log("OTP sent successfully!");
+//       return otp;
+//     } else {
+//       console.error("Failed to send OTP. Error:", response.message);
+//       throw new Error("Failed to send OTP");
+//     }
+//   } catch (error) {
+//     console.error("Error sending OTP:", error.message);
+//     throw new Error("Error sending OTP");
+//   }
+// }
 async function sendOTP(phoneNumber) {
-  const YOUR_API_KEY =
-    "cP8nX0UDBCruhbbkgWmXQCIedwGciV0vJtmt3Pw3fTLGyLzmpfvn3Ii9VKOc";
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  // Set your options
-  const options = {
-    authorization: YOUR_API_KEY,
-    message: `Your OTP is ${otp}`,
-    numbers: [phoneNumber],
-  };
-  console.log("Options===", options);
   try {
-    //   Send SMS
-    const response = await fast2sms.sendMessage(options);
-    console.log("Response from sendMessage:", response);
-    if (response.return === true) {
+    const YOUR_API_KEY =
+      // "cP8nX0UDBCruhbbkgWmXQCIedwGciV0vJtmt3Pw3fTLGyLzmpfvn3Ii9VKOc";
+      "2di4uRQxZfHpNgjXteE8Or3bBlVFYmDG7AWTnhwo019zCvMy6Si1fZgs0VCIjBQoLuldP8WYatrc9HxG";
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const data = qs.stringify({
+      variables_values: otp,
+      route: "otp",
+      numbers: phoneNumber, // Replace with actual phone numbers
+    });
+    console.log("Options===", data);
+    const config = {
+      method: "post",
+      url: "https://www.fast2sms.com/dev/bulkV2",
+      headers: {
+        authorization: YOUR_API_KEY,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      data: data,
+    };
+
+    const response = await axios(config);
+    console.log("Response:", response.data);
+    if (response.data.return === true) {
       console.log("OTP===", otp);
       console.log("OTP sent successfully!");
       return otp;
     } else {
-      console.error("Failed to send OTP. Error:", response.message);
+      console.error("Failed to send OTP. Error:", response.data.message);
       throw new Error("Failed to send OTP");
     }
   } catch (error) {
-    console.error("Error sending OTP:", error.message);
+    console.error(
+      "Error:",
+      error.response ? error.response.data : error.message
+    );
     throw new Error("Error sending OTP");
   }
 }
 
+// sendOTP(7015585404)
 async function sendEmail(email, name) {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "saini.simran3102@gmail.com",
-        pass: "fzvjhntiuhkujbxc",
+        user: "simransaini.224027@gmail.com",
+        pass: "tkpayztlbkssvmyc",
       },
     });
 
     const mailOptions = {
-      from: "saini.simran3102@gmail.com",
+      from: "simransaini.224027@gmail.com",
       to: email,
       subject: "Shopcart",
       text: `Hi ${name}, You are Successfully Registered in Shopcart`,
@@ -131,7 +174,6 @@ async function sendEmail(email, name) {
     throw error;
   }
 }
-
 async function emailIntegration(userData, imagePath) {
   try {
     const { user_username, user_mail, user_pass, user_add, user_contact } =
@@ -237,13 +279,13 @@ async function sendForgotPasswordMail(user_email, user_id) {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "saini.simran3102@gmail.com",
-        pass: "fzvjhntiuhkujbxc",
+        user: "simransaini.224027@gmail.com",
+        pass: "tkpayztlbkssvmyc",
       },
     });
 
     const mailOptions = {
-      from: "saini.simran3102@gmail.com",
+      from: "simransaini.224027@gmail.com",
       to: user_email,
       subject: "Shopcart Reset Password",
       html: `<p style="font-size:20px">Click the following link to reset your Shopcart password:</p>
@@ -461,7 +503,7 @@ async function validateEditProducts(payload) {
           ? ""
           : `Invalid format for ${fieldName}. Only PNG or JPEG allowed`
         : `Size of ${fieldName} exceeds the maximum allowed size (5MB)`
-      : ""; 
+      : "";
   };
 
   const product_image1_error = validateImage(product_image1, "Product Image 1");
@@ -483,7 +525,6 @@ async function validateEditProducts(payload) {
     bestseller_error,
   };
 }
-
 module.exports = {
   generateCaptcha,
   validation,
