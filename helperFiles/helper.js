@@ -80,8 +80,7 @@ async function validation(payload) {
 
 // async function sendOTP(phoneNumber) {
 //   const YOUR_API_KEY =
-//     // "cP8nX0UDBCruhbbkgWmXQCIedwGciV0vJtmt3Pw3fTLGyLzmpfvn3Ii9VKOc";
-//     "2di4uRQxZfHpNgjXteE8Or3bBlVFYmDG7AWTnhwo019zCvMy6Si1fZgs0VCIjBQoLuldP8WYatrc9HxG";
+//     "YOUR_API_KEY"
 //   const otp = Math.floor(100000 + Math.random() * 900000).toString();
 //   // Set your options
 //   const options = {
@@ -109,9 +108,7 @@ async function validation(payload) {
 // }
 async function sendOTP(phoneNumber) {
   try {
-    const YOUR_API_KEY =
-      // "cP8nX0UDBCruhbbkgWmXQCIedwGciV0vJtmt3Pw3fTLGyLzmpfvn3Ii9VKOc";
-      "2di4uRQxZfHpNgjXteE8Or3bBlVFYmDG7AWTnhwo019zCvMy6Si1fZgs0VCIjBQoLuldP8WYatrc9HxG";
+    const YOUR_API_KEY = "YOUR_API_KEY";
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const data = qs.stringify({
       variables_values: otp,
@@ -155,13 +152,13 @@ async function sendEmail(email, name) {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "simransaini.224027@gmail.com",
-        pass: "tkpayztlbkssvmyc",
+        user: "YOUR_EMAIL",
+        pass: "YOUR_EMAIL_PASSWORD",
       },
     });
 
     const mailOptions = {
-      from: "simransaini.224027@gmail.com",
+      from: "YOUR_EMAIL",
       to: email,
       subject: "Shopcart",
       text: `Hi ${name}, You are Successfully Registered in Shopcart`,
@@ -280,13 +277,13 @@ async function sendForgotPasswordMail(user_email, user_id) {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "simransaini.224027@gmail.com",
-        pass: "tkpayztlbkssvmyc",
+        user: "YOUR_EMAIL",
+        pass: "YOUR_EMAIL_PASSWORD",
       },
     });
 
     const mailOptions = {
-      from: "simransaini.224027@gmail.com",
+      from: "YOUR_EMAIL",
       to: user_email,
       subject: "Shopcart Reset Password",
       html: `<p style="font-size:20px">Click the following link to reset your Shopcart password:</p>
