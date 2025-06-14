@@ -108,7 +108,7 @@ async function validation(payload) {
 // }
 async function sendOTP(phoneNumber) {
   try {
-    const YOUR_API_KEY = "YOUR_API_KEY";
+    const YOUR_API_KEY = process.env.FAST_TWO_SMS_API_KEY;
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const data = qs.stringify({
       variables_values: otp,
@@ -152,13 +152,13 @@ async function sendEmail(email, name) {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "YOUR_EMAIL",
-        pass: "YOUR_EMAIL_PASSWORD",
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
       },
     });
 
     const mailOptions = {
-      from: "YOUR_EMAIL",
+      from: process.env.EMAIL,
       to: email,
       subject: "Shopcart",
       text: `Hi ${name}, You are Successfully Registered in Shopcart`,
@@ -277,17 +277,17 @@ async function sendForgotPasswordMail(user_email, user_id) {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "YOUR_EMAIL",
-        pass: "YOUR_EMAIL_PASSWORD",
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
       },
     });
 
     const mailOptions = {
-      from: "YOUR_EMAIL",
+      from: process.env.EMAIL,
       to: user_email,
       subject: "Shopcart Reset Password",
       html: `<p style="font-size:20px">Click the following link to reset your Shopcart password:</p>
-           <a href="http://localhost:3306/login/reset-password?userId=${user_id}">Reset Password</a>`,
+           <a href="http://localhost:${process.env.PORT}/login/reset-password?userId=${user_id}">Reset Password</a>`,
     };
 
     const info = await transporter.sendMail(mailOptions);
